@@ -1,7 +1,7 @@
 /**
  * POST /api/attention — VLM attention testing (Peel-style Vision Studio lite).
  *
- * Body: { imageUrl: local path or InsForge Storage URL, headline, subline?, productName }
+ * Body: { imageUrl: local creative path, headline, subline?, productName }
  * Response: AttentionReport (source "vlm" | "heuristic").
  *
  * Failure chain: live vision model → deterministic copy heuristic. Placeholder

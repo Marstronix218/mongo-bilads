@@ -13,7 +13,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@insforge/sdk": "^1.4.4",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "maplibre-gl": "^5.24.0",

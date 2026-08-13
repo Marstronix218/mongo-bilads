@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { getCampaign } from "@/lib/campaigns";
-import { adminDatabase, finishAgentRun, startAgentRun, WORKSPACE_SLUG } from "@/lib/insforge";
+import { finishAgentRun, recordApproval, startAgentRun } from "@/lib/localdb";
 import { startRoom, decideRoom, getRoom, type BandContext, type BandRoom } from "@/lib/band";
 
 export const runtime = "nodejs";
@@ -126,17 +126,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
     const decision = body.action === "approve" ? "approved" : "rejected";
-    const recorded = await adminDatabase().rpc("record_approval", {
-      p_workspace_slug: WORKSPACE_SLUG,
-      p_campaign_id: campaign.id,
-      p_room_id: body.roomId,
-      p_decision: decision,
-      p_decided_by_subject: principal.subject,
-      p_note: body.note ?? null,
-      p_context: { boardId: existing.context.boardId ?? null },
-      p_request_id: body.requestId,
-    });
-    if (recorded.error) return NextResponse.json({ error: recorded.error.message }, { status: 409 });
+    try {
+      await recordApproval({
+        campaignId: campaign.id,
+        roomId: body.roomId,
+        decision,
+        decidedBySubject: principal.subject,
+        note: body.note ?? null,
+        context: { boardId: existing.context.boardId ?? null },
+        requestId: body.requestId,
+      });
+    } catch (error) {
+      return NextResponse.json({ error: error instanceof Error ? error.message : "Approval failed" }, { status: 409 });
+    }
 
     const room = await decideRoom(body.roomId, decision, principal.subject, body.note);
     return NextResponse.json(room);

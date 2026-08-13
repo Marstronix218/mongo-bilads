@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import type { CampaignParams, ProductBrief } from "@/lib/types";
 import { authorizeApiRequest } from "@/lib/apiAuth";
-import { campaignToApi, listCampaigns, type CampaignRow } from "@/lib/campaigns";
-import { adminDatabase, removeFile, uploadFile, WORKSPACE_SLUG } from "@/lib/insforge";
+import { campaignToApi, listCampaigns } from "@/lib/campaigns";
+import { createCampaign, recordProductAsset, removeFile, uploadFile, type StoredFile } from "@/lib/localdb";
 
 export const runtime = "nodejs";
 
@@ -15,11 +15,6 @@ interface CreateCampaignBody {
   sampleId?: string;
   brief: ProductBrief;
   campaign: CampaignParams;
-}
-
-function oneRow<T>(value: unknown): T | null {
-  if (Array.isArray(value)) return (value[0] as T | undefined) ?? null;
-  return (value as T | null) ?? null;
 }
 
 function validate(body: CreateCampaignBody): void {
@@ -78,41 +73,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid request" }, { status: 400 });
   }
 
-  const { data, error } = await adminDatabase().rpc("create_campaign", {
-    p_workspace_slug: WORKSPACE_SLUG,
-    p_client_request_id: body.clientRequestId,
-    p_product_name: body.brief.productName,
-    p_product_description: body.brief.description,
-    p_target_audience: body.brief.audience,
-    p_weekly_budget_usd: body.campaign.weeklyBudgetUsd,
-    p_campaign_weeks: body.campaign.campaignWeeks,
-    p_awareness_weight: body.campaign.awarenessWeight,
-    p_sample_id: body.sampleId ?? null,
-  });
-  const campaign = oneRow<CampaignRow>(data);
-  if (error || !campaign) {
-    return NextResponse.json({ error: error?.message ?? "Campaign could not be created" }, { status: 409 });
+  let campaign;
+  try {
+    campaign = await createCampaign({
+      clientRequestId: body.clientRequestId,
+      sampleId: body.sampleId ?? null,
+      productName: body.brief.productName,
+      productDescription: body.brief.description,
+      targetAudience: body.brief.audience,
+      weeklyBudgetUsd: body.campaign.weeklyBudgetUsd,
+      campaignWeeks: body.campaign.campaignWeeks,
+      awarenessWeight: body.campaign.awarenessWeight,
+    });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Campaign could not be created" }, { status: 409 });
   }
 
   if (body.brief.imageBase64?.startsWith("data:")) {
-    let stored: Awaited<ReturnType<typeof uploadFile>> = null;
+    let stored: StoredFile | null = null;
     try {
       const image = decodeImage(body.brief.imageBase64);
       const key = `${campaign.workspace_id}/${campaign.id}/product/${randomUUID()}.${image.extension}`;
       stored = await uploadFile(PRODUCT_BUCKET, key, image.bytes, image.mimeType);
-      if (!stored) throw new Error("InsForge Storage is not configured");
-
-      const recorded = await adminDatabase().rpc("record_product_asset", {
-        p_workspace_slug: WORKSPACE_SLUG,
-        p_campaign_id: campaign.id,
-        p_bucket_name: stored.bucket,
-        p_object_key: stored.key,
-        p_storage_url: stored.url,
-        p_mime_type: stored.mimeType,
-        p_byte_size: stored.byteSize,
-        p_sha256: stored.sha256,
-      });
-      if (recorded.error) throw new Error(recorded.error.message);
+      await recordProductAsset({ campaignId: campaign.id, stored });
     } catch (uploadError) {
       if (stored) await removeFile(stored.bucket, stored.key).catch(() => undefined);
       return NextResponse.json({ error: uploadError instanceof Error ? uploadError.message : "Product image upload failed" }, { status: 500 });

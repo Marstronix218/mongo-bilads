@@ -3,7 +3,7 @@ import type { ResearchRequest, ResearchResponse } from "@/lib/types";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { loadBoards } from "@/lib/boards";
 import { getCampaign } from "@/lib/campaigns";
-import { adminDatabase, finishAgentRun, startAgentRun, WORKSPACE_SLUG } from "@/lib/insforge";
+import { finishAgentRun, setCampaignResearch, startAgentRun } from "@/lib/localdb";
 import { runResearcher, fallbackResearcher, type ResearcherBlock } from "@/lib/researcher";
 import { runMediaBuyer } from "@/lib/mediaBuyer";
 import { scoreBoards, cannedReason } from "@/lib/scoring";
@@ -89,12 +89,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       response = { researcher, mediaBuyer };
     }
 
-    const persisted = await adminDatabase().rpc("set_campaign_research", {
-      p_workspace_slug: WORKSPACE_SLUG,
-      p_campaign_id: campaign.id,
-      p_research_result: response,
-    });
-    if (persisted.error) throw new Error(`Research persistence failed: ${persisted.error.message}`);
+    await setCampaignResearch(campaign.id, response as unknown as Record<string, unknown>);
 
     await finishAgentRun({
       run,

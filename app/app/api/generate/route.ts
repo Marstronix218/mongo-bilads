@@ -6,7 +6,7 @@ import { getCampaign } from "@/lib/campaigns";
 import { runCreativeDirector, fallbackConcepts, safeImagePrompt, type ConceptDraft } from "@/lib/creative";
 import { generateCacheKey, readGenerateCache, writeGenerateCache } from "@/lib/cache";
 import { generateAdImage, placeholderUrl, type GeneratedImageResult } from "@/lib/images";
-import { adminDatabase, finishAgentRun, startAgentRun, WORKSPACE_SLUG, type AgentExecutionMode } from "@/lib/insforge";
+import { finishAgentRun, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/localdb";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -117,17 +117,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const concepts = response.concepts.map((concept, position) => ({ ...concept, position }));
-    const persisted = await adminDatabase().rpc("save_creative_generation", {
-      p_workspace_slug: WORKSPACE_SLUG,
-      p_campaign_id: campaign.id,
-      p_idempotency_key: body.requestId,
-      p_billboard_id: body.billboardId,
-      p_generation: body.variant ?? 0,
-      p_consistent_brand: body.consistentBrand,
-      p_source: path === "mixed" ? "fallback" : path,
-      p_concepts: concepts,
+    await saveCreativeGeneration({
+      campaignId: campaign.id,
+      idempotencyKey: body.requestId,
+      billboardId: body.billboardId,
+      generation: body.variant ?? 0,
+      consistentBrand: body.consistentBrand,
+      source: path === "mixed" ? "fallback" : path,
+      concepts,
     });
-    if (persisted.error) throw new Error(`Creative persistence failed: ${persisted.error.message}`);
 
     await finishAgentRun({
       run,
