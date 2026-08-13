@@ -1,13 +1,13 @@
 /**
  * Image generation + persistence for /api/generate.
- * Generated art is uploaded to InsForge Storage for durable production URLs.
- * Local development can fall back to app/public/generated when Storage is not
- * configured. On any failure the placeholder route ships instead.
+ * Generated art is stored on local disk (app/public/storage) for durable URLs,
+ * with app/public/generated as a secondary cache path. On any failure the
+ * placeholder route ships instead.
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { image } from "./gmi";
-import { uploadFile } from "./insforge";
+import { uploadFile } from "./localdb";
 
 const GENERATED_BUCKET = "generated-creatives";
 
@@ -55,7 +55,6 @@ export async function generateAdImage(
   try {
     const bytes = await image(prompt);
 
-    let storageError: unknown;
     try {
       const stored = await uploadFile(
         GENERATED_BUCKET,
@@ -65,15 +64,9 @@ export async function generateAdImage(
         bytes,
         "image/png"
       );
-      if (stored) return { imageUrl: stored.url, asset: stored };
-    } catch (error) {
-      storageError = error;
-    }
-
-    // Deployed functions cannot publish files written at runtime. Local disk is
-    // retained only for offline/development use when Storage is unavailable.
-    if (process.env.NODE_ENV === "production") {
-      throw storageError ?? new Error("InsForge Storage is not configured");
+      return { imageUrl: stored.url, asset: stored };
+    } catch {
+      // Fall through to the plain public/generated path below.
     }
 
     mkdirSync(generatedDir(), { recursive: true });

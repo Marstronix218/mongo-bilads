@@ -12,7 +12,7 @@ import type { AdConcept, ResearchResponse } from "@/lib/types";
 import type { ProductBrief } from "@/lib/types";
 import { getBoard } from "./boards";
 import { nimbleForBoard, loadNimbleSignals } from "./nimble";
-import { recordAgentMessage } from "./insforge";
+import { recordAgentMessage } from "./localdb";
 import {
   BandConfigurationError,
   publishBandDecision,

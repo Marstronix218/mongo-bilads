@@ -9,7 +9,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { chatJson } from "./parse";
-import { downloadFile } from "./insforge";
+import { downloadFile } from "./localdb";
 
 export interface AttentionReport {
   /** What the eye lands on first, in the model's words. */
@@ -25,7 +25,7 @@ export interface AttentionReport {
 }
 
 export interface AttentionInput {
-  imageUrl: string; // local /generated path or InsForge Storage URL
+  imageUrl: string; // local /generated path or /storage creative path
   headline: string;
   subline?: string;
   productName: string;
@@ -38,27 +38,23 @@ function publicDir(): string {
 
 const GENERATED_BUCKET = "generated-creatives";
 const MAX_CREATIVE_BYTES = 10 * 1024 * 1024;
-const STORED_CREATIVE_KEY = /^(?:[0-9a-f-]{36}\/[0-9a-f-]{36}\/)generated\/[\w.-]+\.png$/i;
+const STORED_CREATIVE_PATH = new RegExp(
+  `^/storage/${GENERATED_BUCKET}/((?:[0-9a-f-]{36}/[0-9a-f-]{36}/)?generated/[\\w.-]+\\.png)$`,
+  "i"
+);
 
-/** Load local or allowlisted InsForge-hosted creative bytes without permitting SSRF. */
+/** Load creative bytes from an allowlisted local path without permitting traversal. */
 export async function loadCreativePng(imageUrl: string): Promise<Buffer | null> {
   if (/^\/generated\/[\w.-]+\.png$/.test(imageUrl)) {
     const path = join(publicDir(), imageUrl.slice(1));
     return existsSync(path) ? readFileSync(path) : null;
   }
 
-  const baseUrl = process.env.INSFORGE_BASE_URL;
-  if (!baseUrl) return null;
+  const match = STORED_CREATIVE_PATH.exec(imageUrl);
+  if (!match) return null;
 
   try {
-    const url = new URL(imageUrl);
-    const base = new URL(baseUrl);
-    const prefix = `/api/storage/buckets/${GENERATED_BUCKET}/objects/`;
-    if (url.origin !== base.origin || !url.pathname.startsWith(prefix)) return null;
-    const key = decodeURIComponent(url.pathname.slice(prefix.length));
-    if (!STORED_CREATIVE_KEY.test(key)) return null;
-
-    const bytes = await downloadFile(GENERATED_BUCKET, key);
+    const bytes = await downloadFile(GENERATED_BUCKET, match[1]);
     const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     if (!bytes || bytes.length > MAX_CREATIVE_BYTES || !bytes.subarray(0, 8).equals(pngSignature)) {
       return null;

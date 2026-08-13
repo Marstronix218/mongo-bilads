@@ -527,8 +527,6 @@ function CreativePanel({
               <span>Creatives by GMI Cloud</span>
               <span className="text-bilads-fg/10">|</span>
               <span>Intelligence by Nimble</span>
-              <span className="text-bilads-fg/10">|</span>
-              <span>Powered by InsForge</span>
             </div>
           </>
         )}
@@ -1131,7 +1129,6 @@ export default function ResultsPage() {
             <p>Data: Nimble + SF Planning</p>
             <p>Agents: BAND</p>
             <p>Workforce: Kylon</p>
-            <p>Backend: InsForge</p>
           </div>
         </div>
 
