@@ -1,13 +1,13 @@
 /**
  * Agent 1 — The Researcher 🔍 (PRD §5).
- * LLM path: strict-JSON prompt with brief (+ optional image) + Nimble signals.
+ * LLM path: strict-JSON prompt with brief (+ optional image) + location signals.
  * Fallback path: deterministic keyword→tag profile so /api/research never
  * dead-ends, even with wifi off.
  */
 import type { ProductBrief, ResearchResponse } from "@/lib/types";
 import { chatJson } from "./parse";
 import type { ChatMessage } from "./openai";
-import { nimblePromptBlock, nimbleFallbackFinding, NIMBLE_TAG } from "./nimble";
+import { signalsPromptBlock, signalsFallbackFinding } from "./signals";
 
 export type ResearcherBlock = ResearchResponse["researcher"];
 
@@ -27,12 +27,12 @@ Respond with ONLY a valid JSON object — no prose, no markdown, no code fences.
 Do not use race or other protected traits for targeting decisions.`;
 
 export async function runResearcher(brief: ProductBrief): Promise<ResearcherBlock> {
-  const nimble = nimblePromptBlock();
+  const signals = signalsPromptBlock();
   const userText = [
     `Product: ${brief.productName}`,
     `Description: ${brief.description}`,
     `Stated target audience: ${brief.audience}`,
-    nimble,
+    signals,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -116,11 +116,11 @@ export function fallbackResearcher(brief: ProductBrief): ResearcherBlock {
   if (interests.length === 0) interests.push("commuters", "professionals", "walkable");
 
   const age = text.match(/(\d{2})\s*[-–to]+\s*(\d{2})/);
-  const nimbleFinding = nimbleFallbackFinding();
+  const signalFinding = signalsFallbackFinding();
   const findings = [
     `Core audience mapped to ${interests.slice(0, 3).join(", ")}.`,
     `${brief.productName} buyers decide fast — visibility during daily routines wins.`,
-    nimbleFinding ?? "High-dwell placements beat raw reach for this category.",
+    signalFinding ?? "High-dwell placements beat raw reach for this category.",
     "Recommending bold, low-word-count creative for drive-by legibility.",
   ];
 
@@ -145,4 +145,3 @@ export function fallbackResearcher(brief: ProductBrief): ResearcherBlock {
   };
 }
 
-export { NIMBLE_TAG };

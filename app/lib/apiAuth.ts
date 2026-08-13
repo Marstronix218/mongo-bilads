@@ -10,12 +10,12 @@ import { NextRequest, NextResponse } from "next/server";
  * identity — the Origin / Sec-Fetch-Site checks below are CSRF/request shaping
  * only. Any visitor who can reach the deployed app can call the shared browser
  * APIs; a direct HTTP client can too by sending matching headers. The only
- * verified principal is "machine" (Kylon), which must present the BILADS_API_KEY
- * bearer token.
+ * verified principal is "machine" (external agent callers), which must present
+ * the BILADS_API_KEY bearer token.
  */
 export type ApiPrincipal =
   | { kind: "shared-web"; subject: "shared-web" }
-  | { kind: "machine"; subject: "kylon" };
+  | { kind: "machine"; subject: "machine" };
 
 export type AuthorizationResult =
   | { principal: ApiPrincipal; response?: never }
@@ -83,15 +83,11 @@ export async function authorizeApiRequest(
     if (!allowMachine || !configured || !constantTimeEqual(presented, configured)) {
       return denied("Invalid bearer credential");
     }
-    return { principal: { kind: "machine", subject: "kylon" } };
+    return { principal: { kind: "machine", subject: "machine" } };
   }
 
   if (!allowBrowser) return denied("Machine bearer credential required");
   const rejected = browserRequestAllowed(req);
   if (rejected) return rejected;
   return { principal: { kind: "shared-web", subject: "shared-web" } };
-}
-
-export async function authorizeMachineRequest(req: NextRequest): Promise<AuthorizationResult> {
-  return authorizeApiRequest(req, { allowBrowser: false, allowMachine: true });
 }

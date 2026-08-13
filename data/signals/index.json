@@ -1,90 +1,90 @@
 {
   "generatedAt": "2026-07-13T20:41:59.414Z",
-  "note": "Pre-API Nimble signal stand-in derived from Google Places nearby-business data. Live Nimble pipeline augments with web search, events, and review scraping.",
+  "note": "Location signals derived from Google Places nearby-business data plus live web search.",
   "boards": [
     {
       "boardId": "sf-101-vermont",
       "confidence": 0.9,
       "nearbyBusinessCount": 36,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-280-dalycity",
       "confidence": 0.45,
       "nearbyBusinessCount": 0,
-      "derivedFrom": "neighborhood-modeled (fallback; sparse Places data) + nimble-live-search"
+      "derivedFrom": "neighborhood-modeled (fallback; sparse Places data) + live-web-search"
     },
     {
       "boardId": "sf-market-downtown",
       "confidence": 0.9,
       "nearbyBusinessCount": 50,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-mission-24th",
       "confidence": 0.85,
       "nearbyBusinessCount": 10,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-marina-chestnut",
       "confidence": 0.9,
       "nearbyBusinessCount": 25,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-valencia-mission",
       "confidence": 0.73,
       "nearbyBusinessCount": 6,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-hayes-valley",
       "confidence": 0.76,
       "nearbyBusinessCount": 7,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-sunset-irving",
       "confidence": 0.64,
       "nearbyBusinessCount": 3,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-financial-montgomery",
       "confidence": 0.9,
       "nearbyBusinessCount": 26,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-union-square",
       "confidence": 0.9,
       "nearbyBusinessCount": 38,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-soma-harrison",
       "confidence": 0.9,
       "nearbyBusinessCount": 47,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-richmond-geary",
       "confidence": 0.9,
       "nearbyBusinessCount": 19,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-dogpatch-3rd",
       "confidence": 0.82,
       "nearbyBusinessCount": 9,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     },
     {
       "boardId": "sf-embarcadero-ferry",
       "confidence": 0.82,
       "nearbyBusinessCount": 9,
-      "derivedFrom": "google-places-nearby (real) + nimble-live-search"
+      "derivedFrom": "google-places-nearby (real) + live-web-search"
     }
   ],
   "liveEnrichedAt": "2026-07-13T22:26:27.755Z"

@@ -7,7 +7,7 @@ import type {
   ResearchResponse,
 } from "@/lib/types";
 
-interface BandMessage {
+interface RoomMessage {
   agent: string;
   role: string;
   message: string;
@@ -15,20 +15,15 @@ interface BandMessage {
   action?: string;
 }
 
-interface BandRoom {
+interface ReviewRoom {
   roomId: string;
   status: "discussing" | "awaiting_approval" | "approved" | "rejected";
-  messages: BandMessage[];
-  integration: {
-    mode: "live" | "fallback";
-    remoteRoomId?: string;
-    warning?: string;
-  };
+  messages: RoomMessage[];
 }
 
 type MessageType = "finding" | "recommendation" | "warning" | "approval";
 
-function messageStyle(message: BandMessage): {
+function messageStyle(message: RoomMessage): {
   emoji: string;
   type: MessageType;
 } {
@@ -40,7 +35,7 @@ function messageStyle(message: BandMessage): {
   return { emoji: "🛡️", type: "warning" };
 }
 
-export default function BandDiscussion({
+export default function AgentDiscussion({
   campaignId,
   brief,
   research,
@@ -57,7 +52,7 @@ export default function BandDiscussion({
   visible: boolean;
   onToggle: () => void;
 }) {
-  const [room, setRoom] = useState<BandRoom | null>(null);
+  const [room, setRoom] = useState<ReviewRoom | null>(null);
   const [visibleCount, setVisibleCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [deciding, setDeciding] = useState<"approve" | "reject" | null>(null);
@@ -72,7 +67,7 @@ export default function BandDiscussion({
 
     const controller = new AbortController();
 
-    fetch("/api/band", {
+    fetch("/api/room", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -91,15 +86,15 @@ export default function BandDiscussion({
       signal: controller.signal,
     })
       .then(async (response) => {
-        const body = (await response.json()) as BandRoom | { error?: string };
+        const body = (await response.json()) as ReviewRoom | { error?: string };
         if (!response.ok) {
-          throw new Error("error" in body && body.error ? body.error : "BAND request failed");
+          throw new Error("error" in body && body.error ? body.error : "Agent room request failed");
         }
-        setRoom(body as BandRoom);
+        setRoom(body as ReviewRoom);
       })
       .catch((requestError: unknown) => {
         if (requestError instanceof Error && requestError.name === "AbortError") return;
-        setError(requestError instanceof Error ? requestError.message : "BAND request failed");
+        setError(requestError instanceof Error ? requestError.message : "Agent room request failed");
       })
       .finally(() => setLoading(false));
 
@@ -135,7 +130,7 @@ export default function BandDiscussion({
     setDeciding(action);
     setError(null);
     try {
-      const response = await fetch("/api/band", {
+      const response = await fetch("/api/room", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -145,11 +140,11 @@ export default function BandDiscussion({
           requestId: `${requestId}:decision`,
         }),
       });
-      const body = (await response.json()) as BandRoom | { error?: string };
+      const body = (await response.json()) as ReviewRoom | { error?: string };
       if (!response.ok) {
         throw new Error("error" in body && body.error ? body.error : "Decision failed");
       }
-      const updated = body as BandRoom;
+      const updated = body as ReviewRoom;
       setRoom(updated);
       setVisibleCount(updated.messages.length);
     } catch (decisionError) {
@@ -179,12 +174,12 @@ export default function BandDiscussion({
     <div className="bg-bilads-surface/50 border border-bilads-fg/10 rounded-lg overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2 border-b border-bilads-fg/10">
         <span className="text-xs font-mono text-bilads-fg/50">
-          BAND — Agent Collaboration Room
+          Agent Collaboration Room
         </span>
         <button
           onClick={onToggle}
           className="text-xs text-bilads-fg/40 hover:text-bilads-fg"
-          aria-label="Close BAND discussion"
+          aria-label="Close agent discussion"
         >
           &times;
         </button>
@@ -193,7 +188,7 @@ export default function BandDiscussion({
       {loading && !room && (
         <div className="p-3 flex items-center gap-2 text-bilads-fg/40">
           <div className="w-1.5 h-1.5 bg-bilads-accent rounded-full animate-pulse" />
-          <span className="text-[10px] font-mono">Creating BAND room...</span>
+          <span className="text-[10px] font-mono">Convening agents...</span>
         </div>
       )}
 
@@ -215,17 +210,6 @@ export default function BandDiscussion({
 
       {room && (
         <>
-          <div className="px-3 pt-2 flex items-center gap-2 text-[9px] font-mono">
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                room.integration.mode === "live" ? "bg-green-400" : "bg-amber-400"
-              }`}
-            />
-            <span className="text-bilads-fg/35">
-              {room.integration.mode === "live" ? "LIVE BAND ROOM" : "LOCAL FALLBACK"}
-            </span>
-          </div>
-
           <div className="max-h-80 overflow-y-auto p-3 space-y-3">
             {room.messages.slice(0, visibleCount).map((message, index) => {
               const presentation = messageStyle(message);
@@ -291,11 +275,6 @@ export default function BandDiscussion({
             )}
 
             {error && <p className="text-[10px] text-red-300/80">{error}</p>}
-            {room.integration.warning && (
-              <p className="text-[9px] leading-relaxed text-amber-300/60">
-                {room.integration.warning}
-              </p>
-            )}
           </div>
         </>
       )}

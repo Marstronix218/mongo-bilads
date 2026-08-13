@@ -6,7 +6,6 @@
     "sync": "node scripts/sync-data.mjs",
     "predev": "node scripts/sync-data.mjs",
     "prebuild": "node scripts/sync-data.mjs",
-    "nimble:enrich": "node ../scripts/nimble-live-enrich.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

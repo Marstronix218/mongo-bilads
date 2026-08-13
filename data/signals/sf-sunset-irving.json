@@ -5,9 +5,9 @@
     "3 nearby businesses mapped within 0.3 mi",
     "Dominant nearby categories: Travel agency (2), Marketing agency (2), Beauty salon (2), Advertising agency",
     "1 rated venues nearby, avg rating 4.7/5",
-    "Audience fit: Sunset — families, students, suburban",
-    "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
-    "Live web (2 weeks ago): 2026 Election Results for San Francisco Board of Supervisors District… — Candidate summaries are based on interviews with the candidates, questionnaires, statements made at debates a…"
+    "Audience fit: Sunset \u2014 families, students, suburban",
+    "Live web (4 days ago): San Francisco's New Restaurant Openings \u2014 Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar\u2026",
+    "Live web (2 weeks ago): 2026 Election Results for San Francisco Board of Supervisors District\u2026 \u2014 Candidate summaries are based on interviews with the candidates, questionnaires, statements made at debates a\u2026"
   ],
   "source_urls": [
     "https://abc7news.com/post/san-francisco-sunset-district-night-market-raising-concerns-merchants-transparency/15369951/",
@@ -15,12 +15,12 @@
     "https://www.sf.gov/perfect-day-inner-sunset"
   ],
   "confidence": 0.64,
-  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "derivedFrom": "google-places-nearby (real) + live-web-search",
   "nearbyBusinessCount": 3,
   "live": {
     "signals": [
-      "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
-      "Live web (2 weeks ago): 2026 Election Results for San Francisco Board of Supervisors District… — Candidate summaries are based on interviews with the candidates, questionnaires, statements made at debates a…"
+      "Live web (4 days ago): San Francisco's New Restaurant Openings \u2014 Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar\u2026",
+      "Live web (2 weeks ago): 2026 Election Results for San Francisco Board of Supervisors District\u2026 \u2014 Candidate summaries are based on interviews with the candidates, questionnaires, statements made at debates a\u2026"
     ],
     "source_urls": [
       "https://abc7news.com/post/san-francisco-sunset-district-night-market-raising-concerns-merchants-transparency/15369951/",

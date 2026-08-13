@@ -1,6 +1,6 @@
 /**
  * Repo-layout resolver. The Next.js app lives in app/ but shared demo data
- * (data/nimble-signals, data/creative-seed, data/cache) lives at the repo
+ * (data/signals, data/creative-seed, data/cache) lives at the repo
  * root. Resolve against cwd first so this works whether the dev server was
  * started from app/ or the repo root.
  */
