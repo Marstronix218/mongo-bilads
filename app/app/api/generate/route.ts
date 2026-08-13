@@ -7,6 +7,7 @@ import { runCreativeDirector, fallbackConcepts, safeImagePrompt, type ConceptDra
 import { generateCacheKey, readGenerateCache, writeGenerateCache } from "@/lib/cache";
 import { generateAdImage, placeholderUrl, type GeneratedImageResult } from "@/lib/images";
 import { finishAgentRun, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/localdb";
+import { CHAT_MODEL, IMAGE_MODEL } from "@/lib/openai";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       initiatedBySubject: auth.principal.subject,
       requestId: body.requestId,
       agent: "creative-director",
-      model: `${process.env.GMI_CHAT_MODEL ?? "unknown"} + ${process.env.GMI_IMAGE_MODEL ?? "unknown"}`,
+      model: `${CHAT_MODEL} + ${IMAGE_MODEL}`,
       input: {
         billboardId: body.billboardId,
         generation: body.variant ?? 0,

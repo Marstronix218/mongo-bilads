@@ -4,7 +4,7 @@
 
 Bilads is an AI-assisted billboard planning workspace for San Francisco. Give it a product brief, website, or image and it ranks affordable placements, generates neighborhood-aware creative concepts, places the creative into real street scenes, and simulates campaign reach and cost.
 
-The project is a Next.js application with a local file-backed system of record. GMI Cloud powers language and image generation, Nimble enriches location research, BAND hosts the multi-agent review room, and a machine-facing Kylon endpoint can drive the workflow. Deterministic scoring and local fallbacks keep the core demo usable when optional integrations are unavailable.
+The project is a Next.js application with a local file-backed system of record and a server-only MongoDB Atlas connection available for auxiliary persistence. OpenAI powers language, vision, and image generation, Nimble enriches location research, BAND hosts the multi-agent review room, and a machine-facing Kylon endpoint can drive the workflow. Deterministic scoring and local fallbacks keep the core demo usable when optional integrations are unavailable.
 
 ## What it includes
 
@@ -23,7 +23,8 @@ The project is a Next.js application with a local file-backed system of record. 
 | --- | --- | --- |
 | Web application | Next.js 16, React 19, TypeScript | Onboarding, campaign workflow, maps, creative review, and API routes |
 | System of record | Local JSON store and disk storage (`app/.data`, `app/public/storage`) | Campaigns, agent runs, messages, approvals, and durable assets |
-| AI generation | GMI Cloud | Audience research, planning copy, and billboard artwork |
+| Auxiliary database | MongoDB Atlas | Server-only MongoDB access and connection health checks |
+| AI generation | OpenAI Responses and Image APIs | Audience research, planning copy, vision analysis, and billboard artwork |
 | Market intelligence | Nimble plus committed signal data | Location and audience enrichment |
 | Agent collaboration | BAND | Five-agent discussion and approval workflow |
 | Maps and simulation | MapLibre, Leaflet, Recharts, Google Street View | Placement exploration, mockups, and performance scenarios |
@@ -33,7 +34,7 @@ The application currently uses one seeded `bilads` workspace persisted on local 
 ## Prerequisites
 
 - Node.js 20.9 or newer and npm
-- A GMI Cloud API key for live research and image generation
+- An OpenAI API key for live research, vision, and image generation
 - Optional BAND, Nimble, and Google Maps/Street View credentials
 
 ## Local setup
@@ -52,7 +53,7 @@ The application currently uses one seeded `bilads` workspace persisted on local 
    cp .env.example app/.env.local
    ```
 
-   At minimum, configure `GMI_API_KEY` for live research and image generation. The default GMI endpoints and model IDs are already listed in `.env.example`.
+   At minimum, configure `OPENAI_API_KEY`. Default OpenAI model IDs are listed in `.env.example`.
 
 3. Start the development server:
 
@@ -69,13 +70,14 @@ The commented template in `.env.example` is the source of truth. Keep all secret
 
 | Group | Variables | Required? |
 | --- | --- | --- |
-| GMI Cloud | `GMI_API_KEY`, `GMI_BASE_URL`, `GMI_CHAT_MODEL`, `GMI_VISION_MODEL`, `GMI_IMAGE_MODEL`, `GMI_MEDIA_URL` | API key required for live AI; endpoints/models have defaults |
+| MongoDB Atlas | `MONGODB_URI`, `MONGODB_DB` | URI required for MongoDB access; database defaults to `bilads` |
+| OpenAI | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL`, `OPENAI_VISION_MODEL`, `OPENAI_IMAGE_MODEL` | API key required for live AI; model IDs have defaults |
 | Browser/API gates | `BILADS_APP_ORIGIN`, `BILADS_API_KEY` | App origin required in production; bearer key required for Kylon |
 | BAND | `BAND_API_BASE_URL` and the five `BAND_*_API_KEY` values | Optional; local review-room fallback is available |
 | Nimble | `NIMBLE_API_KEY` | Optional; committed signals are used as fallback |
 | Street View | `GOOGLE_MAPS_API_KEY` or `GOOGLE_STREET_VIEW_API_KEY` | Optional |
 
-`BILADS_APP_ORIGIN` shapes same-origin browser requests but is not user authentication; restrict access at the deployment layer if the shared workspace should not be public.
+`OPENAI_API_KEY` and `MONGODB_URI` are server-only credentials and must never be exposed through a `NEXT_PUBLIC_*` variable. `BILADS_APP_ORIGIN` shapes same-origin browser requests but is not user authentication; restrict access at the deployment layer if the shared workspace should not be public. With the app running, `GET /api/health/mongodb` performs a credential-safe Atlas ping and returns only connection status.
 
 ## Common commands
 

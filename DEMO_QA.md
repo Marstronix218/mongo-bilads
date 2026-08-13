@@ -7,7 +7,7 @@ and **likely questions with prepared answers** (including the tough ones).
 **Jump to:**
 [One-liner map](#one-liner-map) ·
 [Nimble](#1-nimble--live-market--location-intelligence) ·
-[GMI Cloud](#2-gmi-cloud--llm--image-generation) ·
+[OpenAI](#2-openai--text-vision--image-generation) ·
 [BAND](#3-band--agent-collaboration--human-approval) ·
 [Kylon](#4-kylon--ai-workforce-management) ·
 [InsForge](#5-insforge--backend--system-of-record) ·
@@ -22,12 +22,12 @@ and **likely questions with prepared answers** (including the tough ones).
 | Sponsor | Role in BilAds | Key files |
 |---|---|---|
 | **Nimble** | Live market & location intelligence feeding the Research Agent | `app/lib/nimble.ts`, `data/nimble-signals/` |
-| **GMI Cloud** | All LLM reasoning + all ad image generation | `app/lib/gmi.ts`, `app/lib/images.ts` |
+| **OpenAI** | All language reasoning, vision analysis, and ad image generation | `app/lib/openai.ts`, `app/lib/images.ts` |
 | **BAND** | Five-agent debate room + mandatory human approval | `app/lib/band.ts`, `app/lib/band-client.ts` |
 | **Kylon** | The persistent AI marketing workforce running the assignment pipeline | `app/app/api/kylon/route.ts` |
 | **InsForge** | System of record: campaigns, agent runs/messages, approvals, asset storage | `app/lib/insforge.ts`, `migrations/` |
 
-**The story in one sentence:** Kylon's AI employees run the campaign workflow, Nimble gives them fresh market intelligence, GMI Cloud does the thinking and the creative rendering, BAND is where the agents debate and the human approves, and InsForge records everything durably.
+**The story in one sentence:** Kylon's AI employees run the campaign workflow, Nimble gives them fresh market intelligence, OpenAI does the reasoning, vision analysis, and creative rendering, BAND is where the agents debate and the human approves, and InsForge records everything durably.
 
 ---
 
@@ -85,29 +85,29 @@ Findings carry a `[Nimble]` prefix at the API layer; the frontend strips it and 
 
 ---
 
-## 2. GMI Cloud — LLM + image generation
+## 2. OpenAI — Text, vision, and image generation
 
 ### 30-second answer
-> "GMI Cloud powers both halves of the AI: all LLM reasoning (research, concept generation, vision) through their OpenAI-compatible serving cluster, and all ad creative rendering through their image request-queue API. One vendor, one client, two modalities — and every call has a timeout and a deterministic fallback so the app never dead-ends."
+> "OpenAI powers the full AI path: research, concept generation, and vision analysis use the Responses API, while billboard artwork uses the Image API. One native SDK covers every modality, and every call has a timeout and deterministic fallback so the app never dead-ends."
 
 ### Where it lives
-- `app/lib/gmi.ts` — single client; chat on `GMI_BASE_URL`, images on the async request-queue endpoint.
+- `app/lib/openai.ts` — server-only OpenAI client using the Responses and Image APIs.
 - `app/lib/images.ts` — generates ad images, uploads them to InsForge Storage for durable URLs.
 - Used by `/api/research`, `/api/generate`, and the vision-based billboard detection.
 
 ### Likely questions
 
 **Q: Which models, and why?**
-`google/gemini-3.5-flash` for chat — ~2.6s responses, strict-JSON clean, vision-capable, verified against the live API. `gemini-3.1-flash-image` for creatives — ~17s per image via the request queue. Both are configurable by env var.
+`gpt-5.6-luna` for text and vision because the workflow is high-volume and latency/cost-sensitive. `gpt-image-2` renders wide 1536×768 creatives. Both are configurable by environment variable.
 
-**Q: What happens if GMI is slow or down?**
-Chat calls are capped at 20s, image calls at 45s (images legitimately take ~17s). On timeout or missing key, research falls back to a deterministic result and images fall back to branded SVG placeholders. The demo cannot hang on a network failure.
+**Q: What happens if OpenAI is slow or down?**
+Responses calls are capped at 20s and image calls at 55s. On timeout or missing key, research falls back to a deterministic result and images fall back to branded SVG placeholders. Timed-out requests are aborted, so the app cannot hang on a network failure.
 
 **Q: How do you stop the image model from inventing claims or prices?**
 Separation of concerns: factual claims come only from the approved campaign brief; the image prompt controls visual treatment (composition, contrast, headline length, viewing distance). The Risk Agent in BAND additionally rejects variants with unsupported claims.
 
-**Q: Why two different GMI endpoints?**
-That's GMI's architecture: chat is the OpenAI-compatible serving cluster; image generation is a separate async request-queue API. We confirmed both against the live service and wrapped them behind one module.
+**Q: Why two OpenAI APIs?**
+The Responses API is the native fit for text and image-understanding turns. The Image API is the direct fit for one-shot image creation and lets the app request the billboard's 2:1 output size without an extra conversational model call.
 
 ---
 
@@ -200,13 +200,13 @@ The app degrades gracefully — images fall back to local disk, persistence no-o
 ## Cross-cutting questions
 
 **Q: What's the end-to-end flow, in one breath?**
-Upload a product → Kylon assigns the work → the Researcher (GMI chat + Nimble signals) profiles the audience → locations are scored → GMI renders location-tailored creatives → the five agents debate in BAND → the human approves → InsForge holds the whole record.
+Upload a product → Kylon assigns the work → the Researcher (OpenAI + Nimble signals) profiles the audience → locations are scored → OpenAI renders location-tailored creatives → the five agents debate in BAND → the human approves → InsForge holds the whole record.
 
 **Q: Why five sponsors — isn't this integration theater?**
-Each occupies a different layer with no overlap: data acquisition (Nimble), inference (GMI), decision governance (BAND), workforce orchestration (Kylon), persistence (InsForge). Remove any one and a real capability disappears, not a logo.
+Each occupies a different layer with no overlap: data acquisition (Nimble), inference (OpenAI), decision governance (BAND), workforce orchestration (Kylon), persistence (InsForge). Remove any one and a real capability disappears, not a logo.
 
 **Q: What's your reliability story?**
-Every external dependency has a timeout and a deterministic fallback: GMI → deterministic research / placeholder images; BAND → local room, labeled `fallback`; Nimble → pre-generated dataset; InsForge → local files. The demo cannot dead-end on a network failure, and the UI is honest about which mode it's in.
+Every external dependency has a timeout and a deterministic fallback: OpenAI → deterministic research / placeholder images; BAND → local room, labeled `fallback`; Nimble → pre-generated dataset; InsForge → local files. The demo cannot dead-end on a network failure, and the UI is honest about which mode it's in.
 
 **Q: Are the reach/conversion numbers predictions?**
 No — it's a scenario simulator, not a prediction engine. Conservative / base / optimistic scenarios with every assumption exposed. We deliberately avoid false precision.
@@ -222,7 +222,7 @@ If pressed on "what's real right now," this is the truthful answer — lead with
 
 | Integration | Live path | Demo default |
 |---|---|---|
-| GMI chat + images | Live API calls (keys set) | **Live**, with placeholder fallback on timeout |
+| OpenAI text + vision + images | Live API calls (`OPENAI_API_KEY` set) | **Live**, with deterministic/placeholder fallback on timeout |
 | InsForge | Live SDK writes + Storage uploads | **Live** (required) |
 | BAND | Real rooms/agents on app.band.ai when the 5 agent keys are set | Live if keys configured; otherwise identical local room, labeled `fallback` |
 | Nimble | Live pipeline behind `NIMBLE_API_KEY` refreshes the signal files | Pre-generated signal dataset built from real nearby-business data |

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
-import { chat, GmiUnavailableError } from "@/lib/gmi";
+import { chat, OpenAIUnavailableError, VISION_MODEL } from "@/lib/openai";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -10,7 +10,7 @@ type Detection = {
   quad: [Point, Point, Point, Point] | null;
   confidence?: number;
   reason?: string;
-  source: "gmi" | "none" | "error";
+  source: "openai" | "none" | "error";
 };
 
 const CACHE_TTL_MS = 60 * 60 * 1000;
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
           ],
         },
       ],
-      process.env.GMI_VISION_MODEL ?? process.env.GMI_CHAT_MODEL
+      VISION_MODEL
     );
     const parsed = parseJson(text) as { quad?: unknown; confidence?: unknown; reason?: unknown };
     const quad = normalizeQuad(parsed.quad, imageW, imageH);
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
       quad,
       confidence: Number(parsed.confidence ?? (quad ? 0.5 : 0)),
       reason: typeof parsed.reason === "string" ? parsed.reason : undefined,
-      source: quad ? "gmi" : "none",
+      source: quad ? "openai" : "none",
     };
     cache.set(key, { value, expiresAt: Date.now() + CACHE_TTL_MS });
     return NextResponse.json(value);
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
     const reason = isRateLimit(err)
       ? "Detector rate-limited; keeping Street View scene unmodified."
       : "Detector unavailable";
-    if (!(err instanceof GmiUnavailableError) && !isRateLimit(err)) {
+    if (!(err instanceof OpenAIUnavailableError) && !isRateLimit(err)) {
       console.error("detect-billboard failed:", err);
     }
     const value: Detection = { quad: null, source: "error", reason };

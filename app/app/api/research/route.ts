@@ -8,6 +8,7 @@ import { runResearcher, fallbackResearcher, type ResearcherBlock } from "@/lib/r
 import { runMediaBuyer } from "@/lib/mediaBuyer";
 import { scoreBoards, cannedReason } from "@/lib/scoring";
 import { buildMockResearchResponse } from "@/lib/mock";
+import { CHAT_MODEL } from "@/lib/openai";
 
 export const runtime = "nodejs";
 
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       initiatedBySubject: auth.principal.subject,
       requestId: body.requestId,
       agent: "researcher+media-buyer",
-      model: process.env.GMI_CHAT_MODEL,
+      model: CHAT_MODEL,
       input: { productName: body.brief.productName, campaign: body.campaign },
     });
   } catch (error) {
