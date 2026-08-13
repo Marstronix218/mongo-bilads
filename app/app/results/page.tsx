@@ -18,7 +18,7 @@ import type { BlobsResult } from "@/lib/blobs";
 import type { AttentionReport } from "@/lib/attention";
 import billboardsData from "@/lib/billboards.json";
 import BillboardComposite from "./BillboardComposite";
-import BandDiscussion from "./BandDiscussion";
+import AgentDiscussion from "./AgentDiscussion";
 
 const billboards = billboardsData as Billboard[];
 
@@ -269,7 +269,7 @@ function InfoCard({
             </div>
           ))}
           <p className="text-[9px] text-bilads-fg/30 mt-1">
-            Source: Nimble market intelligence + SF Planning permits
+            Source: location signal data + SF Planning permits
           </p>
         </div>
       )}
@@ -525,8 +525,6 @@ function CreativePanel({
             {/* Sponsor badges */}
             <div className="flex items-center justify-center gap-6 text-[10px] font-mono text-bilads-fg/30">
               <span>Creatives by OpenAI</span>
-              <span className="text-bilads-fg/10">|</span>
-              <span>Intelligence by Nimble</span>
             </div>
           </>
         )}
@@ -813,7 +811,7 @@ export default function ResultsPage() {
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [creativeBoard, setCreativeBoard] = useState<Billboard | null>(null);
   const [simulation, setSimulation] = useState<SimulationWithCreative | null>(null);
-  const [showBand, setShowBand] = useState(false);
+  const [showRoom, setShowRoom] = useState(false);
   const [blobsData, setBlobsData] = useState<BlobsResult | null>(null);
 
   // Create the durable campaign first, then run and persist research against it.
@@ -1081,54 +1079,22 @@ export default function ResultsPage() {
                 : []
             }
           />
-          {/* BAND discussion */}
+          {/* Agent discussion */}
           {research && campaignId && agentPhase >= 2 && (
-            <BandDiscussion
+            <AgentDiscussion
               campaignId={campaignId}
               brief={brief}
               research={research}
               topBoards={top3Boards}
               campaignWeeks={campaign.campaignWeeks}
-              visible={showBand}
-              onToggle={() => setShowBand((v) => !v)}
+              visible={showRoom}
+              onToggle={() => setShowRoom((v) => !v)}
             />
           )}
 
-          {/* Kylon workspace status */}
-          {research && agentPhase >= 2 && (
-            <div className="bg-bilads-surface/30 border border-bilads-fg/5 rounded-lg p-3">
-              <p className="text-[10px] font-mono text-bilads-fg/30 mb-2">
-                KYLON WORKSPACE
-              </p>
-              <div className="space-y-1.5">
-                {[
-                  { task: "Market research", status: "complete" },
-                  { task: "Media planning", status: "complete" },
-                  { task: "Creative generation", status: creativeBoard ? "complete" : "pending" },
-                  { task: "Campaign packaging", status: "pending" },
-                ].map((item) => (
-                  <div key={item.task} className="flex items-center gap-2 text-[10px] font-mono">
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        item.status === "complete"
-                          ? "bg-green-400"
-                          : item.status === "active"
-                            ? "bg-bilads-accent animate-pulse"
-                            : "bg-bilads-fg/20"
-                      }`}
-                    />
-                    <span className="text-bilads-fg/40">{item.task}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Sponsor attribution */}
+          {/* Attribution */}
           <div className="mt-auto pt-3 border-t border-bilads-fg/5 text-[9px] font-mono text-bilads-fg/20 space-y-0.5">
-            <p>Data: Nimble + SF Planning</p>
-            <p>Agents: BAND</p>
-            <p>Workforce: Kylon</p>
+            <p>Data: SF Planning permits + Google Places</p>
           </div>
         </div>
 

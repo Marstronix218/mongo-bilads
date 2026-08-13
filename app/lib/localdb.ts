@@ -231,7 +231,7 @@ export async function removeFile(bucket: string, key: string): Promise<void> {
 
 export async function startAgentRun(args: {
   campaignId?: string;
-  /** Unverified caller label ("shared-web", "kylon"), never a user id. */
+  /** Unverified caller label ("shared-web", "machine"), never a user id. */
   initiatedBySubject: string;
   requestId: string;
   agent: string;

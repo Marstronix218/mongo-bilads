@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-dogpatch-3rd",
+  "location": "3rd St @ 20th (Dogpatch)",
+  "signals": [
+    "9 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Website designer (3), Artist (2), General contractor (2), Print shop (2)",
+    "8 rated venues nearby, avg rating 4.9/5",
+    "Audience fit: Dogpatch \u2014 creatives, tech, foodies",
+    "Live web (2 weeks ago): SpeedPro SF Waterfront Opens to Serve San Francisco Business Community \u2014 SpeedPro, a leading provider of large format printing and graphics, today announced the opening of SpeedPro S\u2026",
+    "Live web: Restaurants ready for Super Bowl LX's SF presence \u2014 San Francisco is set to host myriad events in the leadup to Super Bowl LX in Santa Clara on Feb. 8, and local\u2026"
+  ],
+  "source_urls": [
+    "https://www.instagram.com/destinationdogpatch/?hl=en",
+    "https://www.instagram.com/reel/DWH8-fPAfCz/",
+    "https://sfpl.org/events/2026/03/14/social-dogpatch-small-business-stroll"
+  ],
+  "confidence": 0.82,
+  "derivedFrom": "google-places-nearby (real) + live-web-search",
+  "nearbyBusinessCount": 9,
+  "live": {
+    "signals": [
+      "Live web (2 weeks ago): SpeedPro SF Waterfront Opens to Serve San Francisco Business Community \u2014 SpeedPro, a leading provider of large format printing and graphics, today announced the opening of SpeedPro S\u2026",
+      "Live web: Restaurants ready for Super Bowl LX's SF presence \u2014 San Francisco is set to host myriad events in the leadup to Super Bowl LX in Santa Clara on Feb. 8, and local\u2026"
+    ],
+    "source_urls": [
+      "https://www.instagram.com/destinationdogpatch/?hl=en",
+      "https://www.instagram.com/reel/DWH8-fPAfCz/",
+      "https://sfpl.org/events/2026/03/14/social-dogpatch-small-business-stroll"
+    ],
+    "query": "Dogpatch San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:25.794Z"
+  }
+}

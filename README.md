@@ -4,7 +4,7 @@
 
 Bilads is an AI-assisted billboard planning workspace for San Francisco. Give it a product brief, website, or image and it ranks affordable placements, generates neighborhood-aware creative concepts, places the creative into real street scenes, and simulates campaign reach and cost.
 
-The project is a Next.js application with a local file-backed system of record and a server-only MongoDB Atlas connection available for auxiliary persistence. OpenAI powers language, vision, and image generation, Nimble enriches location research, BAND hosts the multi-agent review room, and a machine-facing Kylon endpoint can drive the workflow. Deterministic scoring and local fallbacks keep the core demo usable when optional integrations are unavailable.
+The project is a Next.js application with a local file-backed system of record and a server-only MongoDB Atlas connection available for auxiliary persistence. OpenAI powers language, vision, and image generation, committed location-signal data enriches research, and a local five-agent review room handles discussion and approval. Deterministic scoring and local fallbacks keep the core demo usable when optional integrations are unavailable.
 
 ## What it includes
 
@@ -13,7 +13,7 @@ The project is a Next.js application with a local file-backed system of record a
 - A map-first planning flow with location dossiers and traffic context
 - English and Spanish neighborhood-aware creative variants
 - Generated billboard mockups and campaign performance simulations
-- A five-agent BAND review room with explicit human approval
+- A five-agent review room with explicit human approval
 - Saved campaigns, agent runs, decisions, and creative assets in a local store
 - A seller cockpit at `/map` for inventory and advertiser prospecting
 
@@ -25,8 +25,8 @@ The project is a Next.js application with a local file-backed system of record a
 | System of record | Local JSON store and disk storage (`app/.data`, `app/public/storage`) | Campaigns, agent runs, messages, approvals, and durable assets |
 | Auxiliary database | MongoDB Atlas | Server-only MongoDB access and connection health checks |
 | AI generation | OpenAI Responses and Image APIs | Audience research, planning copy, vision analysis, and billboard artwork |
-| Market intelligence | Nimble plus committed signal data | Location and audience enrichment |
-| Agent collaboration | BAND | Five-agent discussion and approval workflow |
+| Market intelligence | Committed location-signal data | Location and audience enrichment |
+| Agent collaboration | Local deterministic agent room | Five-agent discussion and approval workflow |
 | Maps and simulation | MapLibre, Leaflet, Recharts, Google Street View | Placement exploration, mockups, and performance scenarios |
 
 The application currently uses one seeded `bilads` workspace persisted on local disk. It does not provide end-user accounts or tenant isolation.
@@ -35,7 +35,7 @@ The application currently uses one seeded `bilads` workspace persisted on local 
 
 - Node.js 20.9 or newer and npm
 - An OpenAI API key for live research, vision, and image generation
-- Optional BAND, Nimble, and Google Maps/Street View credentials
+- Optional MongoDB Atlas and Google Maps/Street View credentials
 
 ## Local setup
 
@@ -72,9 +72,7 @@ The commented template in `.env.example` is the source of truth. Keep all secret
 | --- | --- | --- |
 | MongoDB Atlas | `MONGODB_URI`, `MONGODB_DB` | URI required for MongoDB access; database defaults to `bilads` |
 | OpenAI | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL`, `OPENAI_VISION_MODEL`, `OPENAI_IMAGE_MODEL` | API key required for live AI; model IDs have defaults |
-| Browser/API gates | `BILADS_APP_ORIGIN`, `BILADS_API_KEY` | App origin required in production; bearer key required for Kylon |
-| BAND | `BAND_API_BASE_URL` and the five `BAND_*_API_KEY` values | Optional; local review-room fallback is available |
-| Nimble | `NIMBLE_API_KEY` | Optional; committed signals are used as fallback |
+| Browser/API gates | `BILADS_APP_ORIGIN`, `BILADS_API_KEY` | App origin required in production; bearer key required for machine callers |
 | Street View | `GOOGLE_MAPS_API_KEY` or `GOOGLE_STREET_VIEW_API_KEY` | Optional |
 
 `OPENAI_API_KEY` and `MONGODB_URI` are server-only credentials and must never be exposed through a `NEXT_PUBLIC_*` variable. `BILADS_APP_ORIGIN` shapes same-origin browser requests but is not user authentication; restrict access at the deployment layer if the shared workspace should not be public. With the app running, `GET /api/health/mongodb` performs a credential-safe Atlas ping and returns only connection status.
@@ -89,7 +87,6 @@ npm run build     # production build; syncs canonical data first
 npm run start     # serve a completed production build
 npm run lint      # ESLint
 npm run sync      # copy canonical root data into app/lib
-npm run nimble:enrich
 ```
 
 Run data checks from the repository root:
@@ -99,7 +96,7 @@ node scripts/validate-data.mjs
 node scripts/check-demomatch.mjs
 ```
 
-The canonical billboard inventory, provenance, traffic heatmap, and Nimble signals live in `data/`. The `predev` and `prebuild` hooks keep the copies consumed by Next.js in sync.
+The canonical billboard inventory, provenance, traffic heatmap, and location signals live in `data/`. The `predev` and `prebuild` hooks keep the copies consumed by Next.js in sync.
 
 ## Data provenance and limitations
 

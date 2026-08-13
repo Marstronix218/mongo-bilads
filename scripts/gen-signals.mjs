@@ -1,20 +1,18 @@
-// Generates data/nimble-signals/<boardId>.json — structured location intelligence
-// per board (GODSON.md Phase 3, "collect and structure Nimble signals").
+// Generates data/signals/<boardId>.json — structured location intelligence
+// per board (GODSON.md Phase 3).
 //
-// Pre-API stand-in: derives signals from the REAL Google Places nearby-business
-// data in billboard-fiber-businesses.json (aggregated across all permit records
-// within RADIUS_MI of each board). The live Nimble pipeline refreshes/augments
-// these with web search, events, and review scraping; the Research Agent reads
-// whichever is present. Shape matches types.ts §G (NimbleSignalFile).
+// Derives signals from the REAL Google Places nearby-business data in
+// billboard-fiber-businesses.json (aggregated across all permit records
+// within RADIUS_MI of each board). Shape matches types.ts §G (LocationSignal).
 //
-// Run: node scripts/gen-nimble-signals.mjs
+// Run: node scripts/gen-signals.mjs
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA = join(__dirname, "..", "data");
-const OUT = join(DATA, "nimble-signals");
+const OUT = join(DATA, "signals");
 mkdirSync(OUT, { recursive: true });
 
 const boards = JSON.parse(readFileSync(join(DATA, "billboards.json"), "utf8"));
@@ -88,7 +86,7 @@ for (const b of boards) {
     boardId: b.id,
     location: `${b.name} (${titleCase(b.neighborhood)})`,
     signals,
-    source_urls: [], // live Nimble populates these
+    source_urls: [],
     confidence: +confidence.toFixed(2),
     derivedFrom,
     nearbyBusinessCount: nearby.length,
@@ -99,9 +97,9 @@ for (const b of boards) {
 
 writeFileSync(join(OUT, "index.json"), JSON.stringify({
   generatedAt: new Date().toISOString(),
-  note: "Pre-API Nimble signal stand-in derived from Google Places nearby-business data. Live Nimble pipeline augments with web search, events, and review scraping.",
+  note: "Location signals derived from Google Places nearby-business data.",
   boards: index,
 }, null, 2) + "\n");
 
 const real = index.filter((r) => r.derivedFrom.startsWith("google")).length;
-console.log(`Wrote ${index.length} signal files to data/nimble-signals/ (${real} from real Places data, ${index.length - real} modeled fallback)`);
+console.log(`Wrote ${index.length} signal files to data/signals/ (${real} from real Places data, ${index.length - real} modeled fallback)`);

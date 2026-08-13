@@ -5,9 +5,9 @@
     "50 nearby businesses mapped within 0.3 mi",
     "Dominant nearby categories: Software company (22), Corporate office (12), Business management consultant (8), Marketing agency (6)",
     "29 rated venues nearby, avg rating 4.6/5",
-    "Audience fit: Downtown — office workers, tech, professionals",
-    "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…",
-    "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b… — More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor…"
+    "Audience fit: Downtown \u2014 office workers, tech, professionals",
+    "Live web: Restaurateurs, neighborhood leaders\u2019 2025 takeaway? SF \u2018has bounced b\u2026 \u2014 The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa\u2026",
+    "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b\u2026 \u2014 More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor\u2026"
   ],
   "source_urls": [
     "https://www.sf.gov/news-mayor-lurie-welcomes-new-businesses-to-downtown-san-francisco",
@@ -15,12 +15,12 @@
     "https://www.instagram.com/reel/DXNUqlKEjWT/?hl=en"
   ],
   "confidence": 0.9,
-  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "derivedFrom": "google-places-nearby (real) + live-web-search",
   "nearbyBusinessCount": 50,
   "live": {
     "signals": [
-      "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…",
-      "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b… — More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor…"
+      "Live web: Restaurateurs, neighborhood leaders\u2019 2025 takeaway? SF \u2018has bounced b\u2026 \u2014 The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa\u2026",
+      "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b\u2026 \u2014 More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor\u2026"
     ],
     "source_urls": [
       "https://www.sf.gov/news-mayor-lurie-welcomes-new-businesses-to-downtown-san-francisco",

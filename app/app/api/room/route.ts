@@ -2,22 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { getCampaign } from "@/lib/campaigns";
 import { finishAgentRun, recordApproval, startAgentRun } from "@/lib/localdb";
-import { startRoom, decideRoom, getRoom, type BandContext, type BandRoom } from "@/lib/band";
+import { startRoom, decideRoom, getRoom, type RoomContext, type ReviewRoom } from "@/lib/room";
 
 export const runtime = "nodejs";
 
-interface BandPost {
+interface RoomPost {
   action: "start" | "approve" | "reject";
   requestId?: string;
   campaignId?: string;
-  context?: BandContext;
+  context?: RoomContext;
   roomId?: string;
   note?: string;
 }
 
-const startRequests = new Map<string, Promise<BandRoom>>();
+const startRequests = new Map<string, Promise<ReviewRoom>>();
 
-function startRoomOnce(requestId: string, context: BandContext, create: () => Promise<BandRoom>) {
+function startRoomOnce(requestId: string, context: RoomContext, create: () => Promise<ReviewRoom>) {
   const key = `${context.campaignId}:${requestId}`;
   const existing = startRequests.get(key);
   if (existing) return existing;
@@ -50,9 +50,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (auth.response) return auth.response;
   const principal = auth.principal;
 
-  let body: BandPost;
+  let body: RoomPost;
   try {
-    body = (await req.json()) as BandPost;
+    body = (await req.json()) as RoomPost;
   } catch {
     return NextResponse.json({ error: "invalid JSON body" }, { status: 400 });
   }
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Context does not match the saved campaign" }, { status: 409 });
     }
 
-    const context: BandContext = {
+    const context: RoomContext = {
       ...body.context,
       campaignId: campaign.id,
       brief: {
@@ -85,8 +85,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           campaignId: campaign.id,
           initiatedBySubject: principal.subject,
           requestId: body.requestId!,
-          agent: "band-collaboration",
-          model: "BAND + deterministic specialist agents",
+          agent: "agent-room",
+          model: "deterministic specialist agents",
           input: { boardId: context.boardId ?? null, campaignWeeks: context.campaignWeeks ?? null },
         });
         try {
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           await finishAgentRun({
             run,
             status: "succeeded",
-            executionMode: created.integration.mode === "live" ? "live" : "fallback",
+            executionMode: "live",
             output: { roomId: created.roomId, messageCount: created.messages.length },
           });
           return created;
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           await finishAgentRun({
             run,
             status: "failed",
-            errorCode: "band_failed",
+            errorCode: "room_failed",
             errorDetail: error instanceof Error ? error.message : String(error),
           }).catch(() => undefined);
           throw error;
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
       return NextResponse.json(room);
     } catch (error) {
-      return NextResponse.json({ error: error instanceof Error ? error.message : "BAND room failed" }, { status: 500 });
+      return NextResponse.json({ error: error instanceof Error ? error.message : "Agent room failed" }, { status: 500 });
     }
   }
 

@@ -1,26 +1,19 @@
 /**
- * BAND — agent collaboration room (SPONSORS.md §3).
- * Five specialist agents post structured reasoning into a shared room; the
- * human campaign owner must explicitly approve before anything proceeds.
- * Kylon manages the workforce; BAND manages collaborative decision-making.
+ * Agent review room — five specialist agents post structured reasoning into a
+ * shared room; the human campaign owner must explicitly approve before
+ * anything proceeds.
  *
  * Messages are generated deterministically from the real campaign data
- * (research output, rankings, concepts, Nimble signals) so the discussion is
+ * (research output, rankings, concepts, location signals) so the discussion is
  * meaningful, fast, and works offline.
  */
 import type { AdConcept, ResearchResponse } from "@/lib/types";
 import type { ProductBrief } from "@/lib/types";
 import { getBoard } from "./boards";
-import { nimbleForBoard, loadNimbleSignals } from "./nimble";
+import { signalForBoard, loadLocationSignals } from "./signals";
 import { recordAgentMessage } from "./localdb";
-import {
-  BandConfigurationError,
-  publishBandDecision,
-  publishBandRoom,
-  type BandLiveRoom,
-} from "./band-client";
 
-export type BandAgent =
+export type RoomAgent =
   | "Market Research Agent"
   | "Media Planner Agent"
   | "Creative Director Agent"
@@ -28,8 +21,8 @@ export type BandAgent =
   | "Risk and Brand Agent"
   | "Human";
 
-export interface BandMessage {
-  agent: BandAgent;
+export interface RoomMessage {
+  agent: RoomAgent;
   role: string;
   message: string;
   timestamp: string;
@@ -38,19 +31,14 @@ export interface BandMessage {
 
 export type RoomStatus = "discussing" | "awaiting_approval" | "approved" | "rejected";
 
-export interface BandRoom {
+export interface ReviewRoom {
   roomId: string;
   status: RoomStatus;
-  messages: BandMessage[];
-  context: BandContext;
-  integration: {
-    mode: "live" | "fallback";
-    remoteRoomId?: string;
-    warning?: string;
-  };
+  messages: RoomMessage[];
+  context: RoomContext;
 }
 
-export interface BandContext {
+export interface RoomContext {
   campaignId: string;
   brief: ProductBrief;
   researcher?: ResearchResponse["researcher"];
@@ -60,39 +48,29 @@ export interface BandContext {
   campaignWeeks?: number;
 }
 
-export interface BandPersistence {
+export interface RoomPersistence {
   campaignId: string;
   agentRunId: string;
 }
 
-const rooms = new Map<string, BandRoom>();
-const liveRooms = new Map<string, BandLiveRoom>();
-const roomPersistence = new Map<string, BandPersistence>();
+const rooms = new Map<string, ReviewRoom>();
+const roomPersistence = new Map<string, RoomPersistence>();
 let roomSeq = 0;
 
-export function getRoom(roomId: string): BandRoom | undefined {
+export function getRoom(roomId: string): ReviewRoom | undefined {
   return rooms.get(roomId);
 }
 
-export function listRooms(): BandRoom[] {
+export function listRooms(): ReviewRoom[] {
   return [...rooms.values()];
 }
 
-function integrationWarning(error: unknown): string {
-  if (error instanceof BandConfigurationError) {
-    return `Live Band disabled. Add ${error.missing.join(", ")} to app/.env.local.`;
-  }
-  return error instanceof Error
-    ? `${error.message}. Showing the local fallback discussion.`
-    : "Band is unavailable. Showing the local fallback discussion.";
-}
-
-export async function startRoom(context: BandContext, persistence: BandPersistence): Promise<BandRoom> {
+export async function startRoom(context: RoomContext, persistence: RoomPersistence): Promise<ReviewRoom> {
   const roomId = `room-${++roomSeq}-${Date.now().toString(36)}`;
-  const messages: BandMessage[] = [];
+  const messages: RoomMessage[] = [];
   const persistenceWrites: Promise<void>[] = [];
-  const post = (agent: BandAgent, role: string, message: string, action?: string) => {
-    const msg: BandMessage = {
+  const post = (agent: RoomAgent, role: string, message: string, action?: string) => {
+    const msg: RoomMessage = {
       agent,
       role,
       message,
@@ -118,14 +96,14 @@ export async function startRoom(context: BandContext, persistence: BandPersisten
   const topBoard = board ?? (topId ? getBoard(topId) : undefined);
   const topRank = mediaBuyer?.rankings.find((r) => r.id === topBoard?.id);
 
-  // 1) Market Research Agent — location findings from Nimble data.
-  const nimble = topBoard ? nimbleForBoard(topBoard.id) : null;
-  const anySignal = [...loadNimbleSignals().values()][0];
+  // 1) Market Research Agent — location findings from the signal dataset.
+  const signal = topBoard ? signalForBoard(topBoard.id) : null;
+  const anySignal = [...loadLocationSignals().values()][0];
   post(
     "Market Research Agent",
-    "location intelligence (Nimble)",
-    nimble
-      ? `${topBoard!.name}: ${nimble.signals.slice(0, 2).join("; ")}. Confidence ${Math.round(nimble.confidence * 100)}% (${nimble.derivedFrom}).`
+    "location intelligence",
+    signal
+      ? `${topBoard!.name}: ${signal.signals.slice(0, 2).join("; ")}. Confidence ${Math.round(signal.confidence * 100)}% (${signal.derivedFrom}).`
       : anySignal
         ? `Market scan (${anySignal.location}): ${anySignal.signals.slice(0, 2).join("; ")}.`
         : `Audience for ${brief.productName} concentrates around daily-routine corridors.`
@@ -186,25 +164,16 @@ export async function startRoom(context: BandContext, persistence: BandPersisten
     "request_approval"
   );
 
-  const room: BandRoom = {
+  const room: ReviewRoom = {
     roomId,
     status: "awaiting_approval",
     messages,
     context,
-    integration: { mode: "fallback" },
   };
   rooms.set(roomId, room);
   roomPersistence.set(roomId, persistence);
 
   await Promise.all(persistenceWrites);
-
-  try {
-    const liveRoom = await publishBandRoom(context.brief.productName, messages);
-    liveRooms.set(roomId, liveRoom);
-    room.integration = { mode: "live", remoteRoomId: liveRoom.roomId };
-  } catch (error) {
-    room.integration = { mode: "fallback", warning: integrationWarning(error) };
-  }
 
   return room;
 }
@@ -215,11 +184,11 @@ export async function decideRoom(
   // Unverified caller label such as "shared-web" — there are no user accounts.
   decidedBySubject: string,
   note?: string
-): Promise<BandRoom | undefined> {
+): Promise<ReviewRoom | undefined> {
   const room = rooms.get(roomId);
   if (!room) return undefined;
   room.status = decision;
-  const msg: BandMessage = {
+  const msg: RoomMessage = {
     agent: "Human",
     role: "campaign owner",
     message: note ?? (decision === "approved" ? "Approved. Proceed with this plan." : "Rejected. Revise and resubmit."),
@@ -241,18 +210,6 @@ export async function decideRoom(
     });
   }
 
-  const liveRoom = liveRooms.get(roomId);
-  if (liveRoom) {
-    try {
-      await publishBandDecision(liveRoom, decision, decidedBySubject, note);
-    } catch (error) {
-      room.integration.warning =
-        error instanceof Error
-          ? `${error.message}. The decision is saved locally but was not mirrored to Band.`
-          : "The decision is saved locally but was not mirrored to Band.";
-    }
-  }
-
   return room;
 }
 
@@ -264,7 +221,7 @@ const SENSITIVE_TARGETING =
   /\b(race|ethnicity|religion|religious|political|health condition|disability|sexual orientation)\b/i;
 
 function riskChecks(
-  ctx: BandContext,
+  ctx: RoomContext,
   trafficType?: string
 ): Array<{ message: string; action?: string }> {
   const out: Array<{ message: string; action?: string }> = [];

@@ -1,0 +1,32 @@
+{
+  "boardId": "sf-280-dalycity",
+  "location": "I-280 N @ Daly City Approach (Outer Mission)",
+  "signals": [
+    "Outer Mission corridor \u2014 vehicle traffic",
+    "Audience profile: commuters, families, suburban, value-seekers, students",
+    "Est. 4,000 daily foot traffic; median income $82,000",
+    "Live web (2 hours ago): The Bay Area\u2019s most anticipated restaurant openings for the rest of t\u2026 \u2014 A wave of new restaurants is slated to arrive in the Bay Area in 2026, from new Mediterranean and Italian spo\u2026",
+    "Live web: CHOW FUN 2026 \u2014 CHOW FUN is an Asian Dine-around to celebrate AANHPI Heritage Month and Small Business Week in the Excelsior\u2026"
+  ],
+  "source_urls": [
+    "https://liveouter.com/?srsltid=AfmBOoqE_eYZRrtBR982_CloZ9bTRBCSikm-Kn5Olfz5TDoRo4vk_9rk",
+    "https://www.merriam-webster.com/dictionary/outer",
+    "https://www.facebook.com/liveouter/"
+  ],
+  "confidence": 0.45,
+  "derivedFrom": "neighborhood-modeled (fallback; sparse Places data) + live-web-search",
+  "nearbyBusinessCount": 0,
+  "live": {
+    "signals": [
+      "Live web (2 hours ago): The Bay Area\u2019s most anticipated restaurant openings for the rest of t\u2026 \u2014 A wave of new restaurants is slated to arrive in the Bay Area in 2026, from new Mediterranean and Italian spo\u2026",
+      "Live web: CHOW FUN 2026 \u2014 CHOW FUN is an Asian Dine-around to celebrate AANHPI Heritage Month and Small Business Week in the Excelsior\u2026"
+    ],
+    "source_urls": [
+      "https://liveouter.com/?srsltid=AfmBOoqE_eYZRrtBR982_CloZ9bTRBCSikm-Kn5Olfz5TDoRo4vk_9rk",
+      "https://www.merriam-webster.com/dictionary/outer",
+      "https://www.facebook.com/liveouter/"
+    ],
+    "query": "Outer Mission San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:25:58.624Z"
+  }
+}

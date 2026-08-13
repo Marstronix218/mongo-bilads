@@ -450,22 +450,21 @@ export interface BillboardDeepFile {
  */
 
 /* ============================================================================
- * G. Sponsor data — Nimble location signals (GODSON.md Phase 3)
+ * G. Location signals (GODSON.md Phase 3)
  * ----------------------------------------------------------------------------
  * Per-board location intelligence the Research Agent folds into its context.
- * Files live at data/nimble-signals/<boardId>.json (+ index.json). Pre-API,
- * these are derived from real Google Places nearby-business data; the live
- * Nimble pipeline augments `signals` and populates `source_urls`.
+ * Files live at data/signals/<boardId>.json (+ index.json), derived from real
+ * Google Places nearby-business data.
  * ========================================================================== */
 
-export interface NimbleSignal {
+export interface LocationSignal {
     /** matches Billboard.id */
     boardId: string;
     /** human-readable, e.g. "24th St @ Mission (Mission)" */
     location: string;
     /** short intelligence bullets for the Researcher's context */
     signals: string[];
-    /** evidence links; empty until the live Nimble pipeline fills them */
+    /** evidence links; empty unless an enrichment pipeline fills them */
     source_urls: string[];
     /** 0..1, higher when backed by more real nearby-business data */
     confidence: number;
