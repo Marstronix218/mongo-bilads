@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-market-downtown",
+  "location": "Market St @ Powell (Downtown)",
+  "signals": [
+    "50 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Software company (22), Corporate office (12), Business management consultant (8), Marketing agency (6)",
+    "29 rated venues nearby, avg rating 4.6/5",
+    "Audience fit: Downtown — office workers, tech, professionals",
+    "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…",
+    "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b… — More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor…"
+  ],
+  "source_urls": [
+    "https://www.sf.gov/news-mayor-lurie-welcomes-new-businesses-to-downtown-san-francisco",
+    "https://downtownsf.org/post/new-business-openings-signal-downtown-sfs-momentum-in-2025",
+    "https://www.instagram.com/reel/DXNUqlKEjWT/?hl=en"
+  ],
+  "confidence": 0.9,
+  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "nearbyBusinessCount": 50,
+  "live": {
+    "signals": [
+      "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…",
+      "Live web (3 days ago): SF Hospitality Leaders Connect at What Now Accelerate Event, Hosted b… — More than a dozen hospitality leaders and industry partners gathered for an afternoon of networking, collabor…"
+    ],
+    "source_urls": [
+      "https://www.sf.gov/news-mayor-lurie-welcomes-new-businesses-to-downtown-san-francisco",
+      "https://downtownsf.org/post/new-business-openings-signal-downtown-sfs-momentum-in-2025",
+      "https://www.instagram.com/reel/DXNUqlKEjWT/?hl=en"
+    ],
+    "query": "Downtown Market Street San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:01.522Z"
+  }
+}

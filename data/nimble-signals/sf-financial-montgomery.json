@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-financial-montgomery",
+  "location": "Montgomery St @ Market (Financial District)",
+  "signals": [
+    "26 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Business management consultant (18), Corporate office (9), Business to business service (6), Marketing consultant (4)",
+    "16 rated venues nearby, avg rating 4.4/5",
+    "Audience fit: Financial District — office workers, professionals, tech",
+    "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
+    "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…"
+  ],
+  "source_urls": [
+    "https://downtownsf.org/",
+    "https://www.partyslate.com/find-venues/corporate-event-venues/near/financial-district-san-francisco-ca-usa",
+    "https://sfnewdeal.org/blog/sf-new-deal-transforms-downtown-sf"
+  ],
+  "confidence": 0.9,
+  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "nearbyBusinessCount": 26,
+  "live": {
+    "signals": [
+      "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
+      "Live web: Restaurateurs, neighborhood leaders’ 2025 takeaway? SF ‘has bounced b… — The owners of San Francisco bars and restaurants that opened in 2025 and organizers of events that debuted sa…"
+    ],
+    "source_urls": [
+      "https://downtownsf.org/",
+      "https://www.partyslate.com/find-venues/corporate-event-venues/near/financial-district-san-francisco-ca-usa",
+      "https://sfnewdeal.org/blog/sf-new-deal-transforms-downtown-sf"
+    ],
+    "query": "Financial District San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:15.845Z"
+  }
+}

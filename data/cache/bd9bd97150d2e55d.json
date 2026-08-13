@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close your month in a day.",
+      "subline": "Automated books and real-time runway for startups.",
+      "rationale": "High contrast dark mode aesthetic appeals to SoMa tech founders; 5-word headline ensures instant comprehension.",
+      "imageUrl": "/generated/bd9bd97150d2e55d-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the spreadsheet anxiety.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "Directly targets the commuter's pain point of manual error anxiety with bold, minimal symbolism.",
+      "imageUrl": "/generated/bd9bd97150d2e55d-1.png"
+    }
+  ]
+}

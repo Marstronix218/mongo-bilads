@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Your work and life, perfectly synced.",
+      "subline": "Seamlessly transition from office to evening with Apple Ecosystem.",
+      "rationale": "Targets busy SoMa tech professionals with a direct, high-contrast message about effortless daily integration.",
+      "imageUrl": "/generated/1845160a3a3f9c8d-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Start here. Finish anywhere.",
+      "subline": "Your secure digital world, moving effortlessly with you.",
+      "rationale": "Captures the high-mobility lifestyle of SoMa commuters and creatives with a bold, active visual.",
+      "imageUrl": "/generated/1845160a3a3f9c8d-1.png"
+    }
+  ]
+}

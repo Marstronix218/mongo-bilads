@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Own the road.",
+      "subline": "The lightweight, long-range electric commuter bike.",
+      "rationale": "High contrast, high-status imagery appeals to SoMa's tech professionals looking to bypass traffic.",
+      "imageUrl": "/generated/11107bcba9b266a2-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Your new commute has zero emissions.",
+      "subline": "App-unlocked, long-range, and effortlessly light.",
+      "rationale": "Targets the eco-conscious mindset of tech commuters with clean, aspirational design.",
+      "imageUrl": "/generated/11107bcba9b266a2-1.png"
+    }
+  ]
+}

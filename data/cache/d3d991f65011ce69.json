@@ -1,0 +1,36 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Real magic happens at the table.",
+      "subline": "Pair your favorite Mission tacos with an ice-cold Coca-Cola.",
+      "rationale": "Connects Coca-Cola directly to the local Mission food culture for hungry commuters and foodies.",
+      "imageUrl": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F58e592f3-3694-408c-ba2b-8baa9524acdf%2Fgenerated%2Fd3d991f65011ce69-0%20(1).png?v=13f41ee5b9b0ffe502df85d2fabfc6fc",
+      "asset": {
+        "bucket": "generated-creatives",
+        "url": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F58e592f3-3694-408c-ba2b-8baa9524acdf%2Fgenerated%2Fd3d991f65011ce69-0%20(1).png?v=13f41ee5b9b0ffe502df85d2fabfc6fc",
+        "key": "00000000-0000-4000-8000-000000000001/58e592f3-3694-408c-ba2b-8baa9524acdf/generated/d3d991f65011ce69-0 (1).png",
+        "mimeType": "image/png",
+        "byteSize": 3326321,
+        "sha256": "856a2e68d60cfb777de872719d00ce190d97aa5951d5220d190232312071ea4e"
+      }
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Sabor que une a la familia.",
+      "subline": "El toque perfecto para tus momentos compartidos.",
+      "rationale": "Resonates with the local Latino community by celebrating family connection over shared meals.",
+      "imageUrl": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F58e592f3-3694-408c-ba2b-8baa9524acdf%2Fgenerated%2Fd3d991f65011ce69-1%20(1).png?v=299cd4c4599a866876dcccf93a5f7d97",
+      "asset": {
+        "bucket": "generated-creatives",
+        "url": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F58e592f3-3694-408c-ba2b-8baa9524acdf%2Fgenerated%2Fd3d991f65011ce69-1%20(1).png?v=299cd4c4599a866876dcccf93a5f7d97",
+        "key": "00000000-0000-4000-8000-000000000001/58e592f3-3694-408c-ba2b-8baa9524acdf/generated/d3d991f65011ce69-1 (1).png",
+        "mimeType": "image/png",
+        "byteSize": 1761334,
+        "sha256": "63622a295fa6e243b2c9ac9c53ed349bc7ce4f8b0791b8e5eef876c1802b30ee"
+      }
+    }
+  ]
+}

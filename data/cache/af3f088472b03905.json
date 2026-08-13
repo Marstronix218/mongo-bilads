@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Save the planet.",
+      "subline": "The lightweight, long-range electric commuter bike.",
+      "rationale": "High-contrast neon green grabs fast-moving highway drivers; direct benefit-driven copy appeals to eco-conscious tech commuters.",
+      "imageUrl": "/generated/af3f088472b03905-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Your new commute has no parking spots.",
+      "subline": "Unlocks with your phone. Outruns the traffic.",
+      "rationale": "Bold cobalt blue signals premium tech; the headline immediately solves the SoMa professional's biggest daily",
+      "imageUrl": "/generated/af3f088472b03905-1.png"
+    }
+  ]
+}

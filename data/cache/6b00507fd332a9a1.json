@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Own the hills, skip the gridlock.",
+      "subline": "The premium electric commuter built for San Francisco.",
+      "rationale": "Speaks directly to SF hill struggles with high-contrast, minimalist local imagery.",
+      "imageUrl": "/generated/6b00507fd332a9a1-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Conquista las pendientes con pura libertad.",
+      "subline": "Tu alternativa premium al tráfico de la ciudad.",
+      "rationale": "Uses culturally resonant vibrant colors and native phrasing to celebrate freedom over traffic.",
+      "imageUrl": "/generated/6b00507fd332a9a1-1.png"
+    }
+  ]
+}

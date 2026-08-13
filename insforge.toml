@@ -1,0 +1,8 @@
+[storage]
+max_file_size_mb = 10
+
+[realtime]
+retention_days = 0
+
+[schedules]
+retention_days = 7

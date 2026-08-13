@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Slow mornings. Late-night pour-overs.",
+      "subline": "Your local micro-roaster and gallery on Valencia.",
+      "rationale": "Captures the dual-nature of the Mission's creative day-to-night lifestyle.",
+      "imageUrl": "/generated/4c7b010f60316d28-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Café local para mentes creativas.",
+      "subline": "Espresso de origen único y arte en la Misión.",
+      "rationale": "Appeals directly to the Spanish-speaking creative community with a focus on art and origin.",
+      "imageUrl": "/generated/4c7b010f60316d28-1.png"
+    }
+  ]
+}

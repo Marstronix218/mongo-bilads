@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-embarcadero-ferry",
+  "location": "Embarcadero @ Ferry Building (Embarcadero)",
+  "signals": [
+    "9 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Business management consultant (6), Business center (4), Accountant (3), Legal services (2)",
+    "5 rated venues nearby, avg rating 4.8/5",
+    "Audience fit: Embarcadero — tourists, professionals, foodies",
+    "Live web (2 hours ago): The Bay Area’s most anticipated restaurant openings for the rest of t… — A wave of new restaurants is slated to arrive in the Bay Area in 2026, from new Mediterranean and Italian spo…",
+    "Live web (3 days ago): Ferry Building gets second annual daylong party — San Franciscans will celebrate the Ferry Building's 128th anniversary Sunday with a daylong extravaganza at t…"
+  ],
+  "source_urls": [
+    "https://www.instagram.com/embarcaderoctr/?hl=en",
+    "https://downtownsf.org/",
+    "https://www.sf.gov/news--san-francisco-announces-launch-new-downtown-event-series-embarcadero-plaza"
+  ],
+  "confidence": 0.82,
+  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "nearbyBusinessCount": 9,
+  "live": {
+    "signals": [
+      "Live web (2 hours ago): The Bay Area’s most anticipated restaurant openings for the rest of t… — A wave of new restaurants is slated to arrive in the Bay Area in 2026, from new Mediterranean and Italian spo…",
+      "Live web (3 days ago): Ferry Building gets second annual daylong party — San Franciscans will celebrate the Ferry Building's 128th anniversary Sunday with a daylong extravaganza at t…"
+    ],
+    "source_urls": [
+      "https://www.instagram.com/embarcaderoctr/?hl=en",
+      "https://downtownsf.org/",
+      "https://www.sf.gov/news--san-francisco-announces-launch-new-downtown-event-series-embarcadero-plaza"
+    ],
+    "query": "Embarcadero San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:27.754Z"
+  }
+}

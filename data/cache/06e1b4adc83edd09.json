@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "San Francisco hills, flattened.",
+      "subline": "The premium electric commuter bike built for the Marina.",
+      "rationale": "Directly addresses SF's hills with high-contrast, premium imagery tailored to Marina locals.",
+      "imageUrl": "/generated/06e1b4adc83edd09-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the traffic. Keep the view.",
+      "subline": "Conquer your daily commute with premium electric power.",
+      "rationale": "Appeals to the outdoor, active lifestyle of Marina pedestrians seeking a better commute.",
+      "imageUrl": "/generated/06e1b4adc83edd09-1.png"
+    }
+  ]
+}

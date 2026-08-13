@@ -1,0 +1,618 @@
+[
+  {
+    "id": "sf-101-vermont",
+    "name": "US-101 N @ 6th St",
+    "lat": 37.776837224000076,
+    "lng": -122.40296556099997,
+    "photo": "/billboards/sf-101-vermont.jpg",
+    "adCorners": [
+      [
+        216,
+        178
+      ],
+      [
+        377,
+        166
+      ],
+      [
+        377,
+        214
+      ],
+      [
+        216,
+        218
+      ]
+    ],
+    "dailyImpressions": 52000,
+    "trafficType": "vehicle",
+    "avgDwellSeconds": 4,
+    "weeklyCostUsd": 2900,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "commuters",
+      "tech",
+      "young professionals",
+      "eco-conscious",
+      "startups"
+    ],
+    "demographics": {
+      "medianAge": 33,
+      "medianIncome": 118000,
+      "footTrafficDaily": 9000,
+      "hispanicSharePct": 15
+    }
+  },
+  {
+    "id": "sf-280-dalycity",
+    "name": "US-101 N @ 8th East Face",
+    "lat": 37.77007049200006,
+    "lng": -122.40553258899996,
+    "photo": "/billboards/sf-280-dalycity.jpg",
+    "adCorners": [
+      [
+        302,
+        176
+      ],
+      [
+        425,
+        168
+      ],
+      [
+        425,
+        216
+      ],
+      [
+        302,
+        219
+      ]
+    ],
+    "dailyImpressions": 28000,
+    "trafficType": "vehicle",
+    "avgDwellSeconds": 4,
+    "weeklyCostUsd": 1600,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "commuters",
+      "families",
+      "suburban",
+      "value-seekers",
+      "students"
+    ],
+    "demographics": {
+      "medianAge": 38,
+      "medianIncome": 82000,
+      "footTrafficDaily": 4000,
+      "hispanicSharePct": 22
+    }
+  },
+  {
+    "id": "sf-market-downtown",
+    "name": "US-101 N @ 8th East Face",
+    "lat": 37.77007049200006,
+    "lng": -122.40553258899996,
+    "photo": "/billboards/sf-market-downtown.jpg",
+    "adCorners": [
+      [
+        302,
+        176
+      ],
+      [
+        425,
+        168
+      ],
+      [
+        425,
+        216
+      ],
+      [
+        302,
+        219
+      ]
+    ],
+    "dailyImpressions": 44000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 6,
+    "weeklyCostUsd": 2900,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "office workers",
+      "tech",
+      "professionals",
+      "tourists",
+      "commuters"
+    ],
+    "demographics": {
+      "medianAge": 36,
+      "medianIncome": 96000,
+      "footTrafficDaily": 28000,
+      "hispanicSharePct": 12
+    }
+  },
+  {
+    "id": "sf-mission-24th",
+    "name": "Mission St @ 8th",
+    "lat": 37.777518085000054,
+    "lng": -122.412676525,
+    "photo": "/billboards/sf-mission-24th.jpg",
+    "adCorners": [
+      [
+        496,
+        12
+      ],
+      [
+        640,
+        60
+      ],
+      [
+        640,
+        205
+      ],
+      [
+        498,
+        158
+      ]
+    ],
+    "dailyImpressions": 38000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 8,
+    "weeklyCostUsd": 1400,
+    "neighborhood": "Mission",
+    "spanishFriendly": true,
+    "audienceTags": [
+      "latino",
+      "nightlife",
+      "creatives",
+      "commuters",
+      "foodies"
+    ],
+    "demographics": {
+      "medianAge": 34,
+      "medianIncome": 76000,
+      "footTrafficDaily": 22000,
+      "hispanicSharePct": 38
+    }
+  },
+  {
+    "id": "sf-marina-chestnut",
+    "name": "Folsom St @ 7th",
+    "lat": 37.77716378000008,
+    "lng": -122.40770925099997,
+    "photo": "/billboards/sf-marina-chestnut.jpg",
+    "adCorners": [
+      [
+        236,
+        94
+      ],
+      [
+        345,
+        93
+      ],
+      [
+        346,
+        205
+      ],
+      [
+        236,
+        206
+      ]
+    ],
+    "dailyImpressions": 26000,
+    "trafficType": "foot",
+    "avgDwellSeconds": 9,
+    "weeklyCostUsd": 2600,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "fitness",
+      "affluent",
+      "young professionals",
+      "outdoors",
+      "eco-conscious"
+    ],
+    "demographics": {
+      "medianAge": 32,
+      "medianIncome": 135000,
+      "footTrafficDaily": 15000,
+      "hispanicSharePct": 8
+    }
+  },
+  {
+    "id": "sf-valencia-mission",
+    "name": "Folsom St @ 7th",
+    "lat": 37.77716378000008,
+    "lng": -122.40770925099997,
+    "photo": "/billboards/sf-valencia-mission.jpg",
+    "adCorners": [
+      [
+        236,
+        94
+      ],
+      [
+        345,
+        93
+      ],
+      [
+        346,
+        205
+      ],
+      [
+        236,
+        206
+      ]
+    ],
+    "dailyImpressions": 24000,
+    "trafficType": "foot",
+    "avgDwellSeconds": 10,
+    "weeklyCostUsd": 1800,
+    "neighborhood": "SoMa",
+    "spanishFriendly": true,
+    "audienceTags": [
+      "creatives",
+      "nightlife",
+      "foodies",
+      "coffee",
+      "walkable"
+    ],
+    "demographics": {
+      "medianAge": 31,
+      "medianIncome": 92000,
+      "footTrafficDaily": 18000,
+      "hispanicSharePct": 26
+    }
+  },
+  {
+    "id": "sf-hayes-valley",
+    "name": "7th St @ Folsom",
+    "lat": 37.77674359900004,
+    "lng": -122.408239864,
+    "photo": "/billboards/sf-hayes-valley.jpg",
+    "adCorners": [
+      [
+        302,
+        181
+      ],
+      [
+        392,
+        178
+      ],
+      [
+        394,
+        219
+      ],
+      [
+        303,
+        222
+      ]
+    ],
+    "dailyImpressions": 21000,
+    "trafficType": "foot",
+    "avgDwellSeconds": 9,
+    "weeklyCostUsd": 1700,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "foodies",
+      "creatives",
+      "walkable",
+      "affluent",
+      "coffee"
+    ],
+    "demographics": {
+      "medianAge": 33,
+      "medianIncome": 108000,
+      "footTrafficDaily": 14000,
+      "hispanicSharePct": 10
+    }
+  },
+  {
+    "id": "sf-sunset-irving",
+    "name": "US-101 S @ 8th St",
+    "lat": 37.77007049200006,
+    "lng": -122.40553258899996,
+    "photo": "/billboards/sf-sunset-irving.jpg",
+    "adCorners": [
+      [
+        430,
+        111
+      ],
+      [
+        541,
+        95
+      ],
+      [
+        542,
+        157
+      ],
+      [
+        428,
+        173
+      ]
+    ],
+    "dailyImpressions": 22000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 6,
+    "weeklyCostUsd": 1250,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "families",
+      "students",
+      "suburban",
+      "value-seekers",
+      "commuters"
+    ],
+    "demographics": {
+      "medianAge": 39,
+      "medianIncome": 98000,
+      "footTrafficDaily": 12000,
+      "hispanicSharePct": 9
+    }
+  },
+  {
+    "id": "sf-financial-montgomery",
+    "name": "US-101 N @ 8th West Face",
+    "lat": 37.77007049200006,
+    "lng": -122.40553258899996,
+    "photo": "/billboards/sf-financial-montgomery.jpg",
+    "adCorners": [
+      [
+        432,
+        68
+      ],
+      [
+        640,
+        43
+      ],
+      [
+        640,
+        212
+      ],
+      [
+        430,
+        196
+      ]
+    ],
+    "dailyImpressions": 40000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 6,
+    "weeklyCostUsd": 3100,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "office workers",
+      "professionals",
+      "tech",
+      "finance",
+      "commuters"
+    ],
+    "demographics": {
+      "medianAge": 37,
+      "medianIncome": 128000,
+      "footTrafficDaily": 26000,
+      "hispanicSharePct": 10
+    }
+  },
+  {
+    "id": "sf-union-square",
+    "name": "Geary St @ Stockton",
+    "lat": 37.788125336000064,
+    "lng": -122.4037439,
+    "photo": "/billboards/sf-union-square.jpg",
+    "adCorners": [
+      [
+        393,
+        157
+      ],
+      [
+        454,
+        156
+      ],
+      [
+        454,
+        196
+      ],
+      [
+        393,
+        197
+      ]
+    ],
+    "dailyImpressions": 47000,
+    "trafficType": "foot",
+    "avgDwellSeconds": 7,
+    "weeklyCostUsd": 3400,
+    "neighborhood": "Union Square",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "tourists",
+      "shoppers",
+      "affluent",
+      "foodies",
+      "nightlife"
+    ],
+    "demographics": {
+      "medianAge": 35,
+      "medianIncome": 90000,
+      "footTrafficDaily": 35000,
+      "hispanicSharePct": 13
+    }
+  },
+  {
+    "id": "sf-soma-harrison",
+    "name": "Harrison St @ 6th",
+    "lat": 37.779717651000055,
+    "lng": -122.40054211699999,
+    "photo": "/billboards/sf-soma-harrison.jpg",
+    "adCorners": [
+      [
+        326,
+        76
+      ],
+      [
+        516,
+        28
+      ],
+      [
+        516,
+        154
+      ],
+      [
+        326,
+        180
+      ]
+    ],
+    "dailyImpressions": 35000,
+    "trafficType": "vehicle",
+    "avgDwellSeconds": 5,
+    "weeklyCostUsd": 2200,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "tech",
+      "fitness",
+      "young professionals",
+      "commuters",
+      "startups"
+    ],
+    "demographics": {
+      "medianAge": 32,
+      "medianIncome": 115000,
+      "footTrafficDaily": 8000,
+      "hispanicSharePct": 14
+    }
+  },
+  {
+    "id": "sf-richmond-geary",
+    "name": "US-101 N @ 6th St",
+    "lat": 37.776837224000076,
+    "lng": -122.40296556099997,
+    "photo": "/billboards/sf-richmond-geary.jpg",
+    "adCorners": [
+      [
+        216,
+        178
+      ],
+      [
+        377,
+        166
+      ],
+      [
+        377,
+        214
+      ],
+      [
+        216,
+        218
+      ]
+    ],
+    "dailyImpressions": 24000,
+    "trafficType": "vehicle",
+    "avgDwellSeconds": 5,
+    "weeklyCostUsd": 1400,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "families",
+      "commuters",
+      "foodies",
+      "suburban",
+      "students"
+    ],
+    "demographics": {
+      "medianAge": 40,
+      "medianIncome": 94000,
+      "footTrafficDaily": 10000,
+      "hispanicSharePct": 8
+    }
+  },
+  {
+    "id": "sf-dogpatch-3rd",
+    "name": "US-101 N @ 8th West Face",
+    "lat": 37.77007049200006,
+    "lng": -122.40553258899996,
+    "photo": "/billboards/sf-dogpatch-3rd.jpg",
+    "adCorners": [
+      [
+        432,
+        68
+      ],
+      [
+        640,
+        43
+      ],
+      [
+        640,
+        212
+      ],
+      [
+        430,
+        196
+      ]
+    ],
+    "dailyImpressions": 22000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 7,
+    "weeklyCostUsd": 1250,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "creatives",
+      "tech",
+      "foodies",
+      "walkable",
+      "young professionals"
+    ],
+    "demographics": {
+      "medianAge": 33,
+      "medianIncome": 112000,
+      "footTrafficDaily": 9000,
+      "hispanicSharePct": 16
+    }
+  },
+  {
+    "id": "sf-embarcadero-ferry",
+    "name": "Harrison St @ 6th",
+    "lat": 37.779717651000055,
+    "lng": -122.40054211699999,
+    "photo": "/billboards/sf-embarcadero-ferry.jpg",
+    "adCorners": [
+      [
+        390,
+        12
+      ],
+      [
+        640,
+        0
+      ],
+      [
+        640,
+        116
+      ],
+      [
+        390,
+        76
+      ]
+    ],
+    "dailyImpressions": 45000,
+    "trafficType": "foot+vehicle",
+    "avgDwellSeconds": 7,
+    "weeklyCostUsd": 3300,
+    "neighborhood": "SoMa",
+    "spanishFriendly": false,
+    "audienceTags": [
+      "tourists",
+      "professionals",
+      "foodies",
+      "affluent",
+      "commuters"
+    ],
+    "demographics": {
+      "medianAge": 36,
+      "medianIncome": 120000,
+      "footTrafficDaily": 30000,
+      "hispanicSharePct": 11
+    }
+  }
+]

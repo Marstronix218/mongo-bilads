@@ -1,0 +1,36 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Coca-Cola. Made for SoMa.",
+      "subline": "Your city. Your move.",
+      "rationale": "Direct neighborhood callout builds instant local relevance on foot+vehicle traffic.",
+      "imageUrl": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F771c2451-9871-4403-b0fa-38322f4b1a07%2Fgenerated%2Fc0245fd1ee45ef35-0%20(1).png?v=31eea20483e0598836eedb7db0f8b42b",
+      "asset": {
+        "bucket": "generated-creatives",
+        "url": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F771c2451-9871-4403-b0fa-38322f4b1a07%2Fgenerated%2Fc0245fd1ee45ef35-0%20(1).png?v=31eea20483e0598836eedb7db0f8b42b",
+        "key": "00000000-0000-4000-8000-000000000001/771c2451-9871-4403-b0fa-38322f4b1a07/generated/c0245fd1ee45ef35-0 (1).png",
+        "mimeType": "image/png",
+        "byteSize": 1723651,
+        "sha256": "f35558f0e400bdcc735b02152be7c428c17bf7bc77d5bd4b6072d5ab7e593653"
+      }
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Meet Coca-Cola.",
+      "subline": "The smarter way to choose.",
+      "rationale": "Minimal second angle contrasts the lifestyle concept for A/B comparison.",
+      "imageUrl": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F771c2451-9871-4403-b0fa-38322f4b1a07%2Fgenerated%2Fc0245fd1ee45ef35-1.png?v=51a4918442bfc2c65f201477a0dd93ea",
+      "asset": {
+        "bucket": "generated-creatives",
+        "url": "https://cike7d99-qnk.us-west.insforge.app/api/storage/buckets/generated-creatives/objects/00000000-0000-4000-8000-000000000001%2F771c2451-9871-4403-b0fa-38322f4b1a07%2Fgenerated%2Fc0245fd1ee45ef35-1.png?v=51a4918442bfc2c65f201477a0dd93ea",
+        "key": "00000000-0000-4000-8000-000000000001/771c2451-9871-4403-b0fa-38322f4b1a07/generated/c0245fd1ee45ef35-1.png",
+        "mimeType": "image/png",
+        "byteSize": 1863758,
+        "sha256": "0f4eb6644c78ac83da60852e8a9cf95a4ff1ef35a9bb689025b6e77703c00ea6"
+      }
+    }
+  ]
+}

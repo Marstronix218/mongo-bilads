@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close your books in a day.",
+      "subline": "Automated accounting and real-time runway for fast-growing startups.",
+      "rationale": "High-contrast blue grabs busy Powell Street commuters; origami symbolizes neat, automated precision.",
+      "imageUrl": "/generated/de640c87a452c8a6-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the spreadsheet anxiety.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "High-visibility neon on black targets tech professionals with a clean, stress-free visual metaphor.",
+      "imageUrl": "/generated/de640c87a452c8a6-1.png"
+    }
+  ]
+}

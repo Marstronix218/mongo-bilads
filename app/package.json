@@ -1,0 +1,42 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-data.mjs",
+    "predev": "node scripts/sync-data.mjs",
+    "prebuild": "node scripts/sync-data.mjs",
+    "nimble:enrich": "node ../scripts/nimble-live-enrich.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@insforge/sdk": "^1.4.4",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0",
+    "maplibre-gl": "^5.24.0",
+    "next": "16.2.10",
+    "openai": "^6.46.0",
+    "perspective-transform": "^1.1.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-leaflet": "^5.0.0",
+    "recharts": "^3.9.2",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@nimble-way/nimble-cli": "^0.14.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.185.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

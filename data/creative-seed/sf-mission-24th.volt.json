@@ -1,0 +1,25 @@
+{
+  "_note": "Pre-written EN/ES creative copy for the Mission bilingual demo moment (§13.5). Doubles as the Creative Director's deterministic fallback for Volt on sf-mission-24th (PRD §5: canned copy templates so the app never dead-ends). Text is overlaid in HTML, never in the image (§5). imageUrl fills in after GMI image gen; imagePrompt is the gen input. Spanish is native SF Mission Spanglish, not a literal translation (§12 risk).",
+  "billboardId": "sf-mission-24th",
+  "sampleId": "volt",
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Park Nothing. Ride the Mission.",
+      "subline": "Volt e-bikes — unlock, roll, gone.",
+      "imagePrompt": "wide-format billboard ad art, sleek electric commuter bike on a Mission District street at golden hour, colorful mural wall backdrop, warm cinematic tones, no text, no words, 1024x512",
+      "imageUrl": "",
+      "rationale": "Commuter-first hook for car-free Mission riders; parking pain, instant unlock."
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "El Mission se mueve en Volt.",
+      "subline": "Sin gas, sin parking — puro flow.",
+      "imagePrompt": "wide-format billboard ad art, electric commuter bike parked outside a Mission taqueria, papel picado and mural colors, warm evening light, no text, no words, 1024x512",
+      "imageUrl": "",
+      "rationale": "Local Spanglish leaning on Mission pride and daily flow, not a literal translation."
+    }
+  ]
+}

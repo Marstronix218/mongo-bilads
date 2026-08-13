@@ -1,0 +1,244 @@
+{
+  "generatedNote": "Each Billboard.id is pinned to the nearest real SF Planning General Advertising Signs (GAS) permit record in sf-billboards.geojson. coordsSnapped=true means billboards.json now uses that permit's real coordinates. modeledWeeklyCostUsd is our tuned price; realRateCardWeeklyRange is the permit metadata's estimate for cross-checking.",
+  "source": "SF Planning GASP permit dataset (sf-billboards.geojson, 559 records) + Google Places nearby-business enrichment (billboard-fiber-businesses.json).",
+  "boards": [
+    {
+      "id": "sf-101-vermont",
+      "sourceRecordId": "KES27",
+      "coordsSnapped": true,
+      "distanceMi": 0.04,
+      "realLat": 37.77007,
+      "realLng": -122.407618,
+      "realAddress": null,
+      "realRateCard": "Est. $7.5k-$18k / 4 weeks",
+      "realEstimatedCpm": "Est. $8-$18 CPM",
+      "modeledWeeklyCostUsd": 2900,
+      "realRateCardWeeklyRange": [
+        1875,
+        4500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-280-dalycity",
+      "sourceRecordId": "ORIG1123",
+      "coordsSnapped": false,
+      "distanceMi": 1.4,
+      "realLat": 37.723659,
+      "realLng": -122.456358,
+      "realAddress": null,
+      "realRateCard": "Est. $2k-$6k / 4 weeks",
+      "realEstimatedCpm": "Est. $4-$10 CPM",
+      "modeledWeeklyCostUsd": 1600,
+      "realRateCardWeeklyRange": [
+        500,
+        1500
+      ],
+      "priceFit": "above-range"
+    },
+    {
+      "id": "sf-market-downtown",
+      "sourceRecordId": "EKC50",
+      "coordsSnapped": true,
+      "distanceMi": 0.1,
+      "realLat": 37.78561,
+      "realLng": -122.408155,
+      "realAddress": null,
+      "realRateCard": "Est. $7.5k-$18k / 4 weeks",
+      "realEstimatedCpm": "Est. $8-$18 CPM",
+      "modeledWeeklyCostUsd": 2900,
+      "realRateCardWeeklyRange": [
+        1875,
+        4500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-mission-24th",
+      "sourceRecordId": "ORIG1094",
+      "coordsSnapped": true,
+      "distanceMi": 0.25,
+      "realLat": 37.748895,
+      "realLng": -122.418405,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 1400,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-marina-chestnut",
+      "sourceRecordId": "ORIG1308",
+      "coordsSnapped": true,
+      "distanceMi": 0.03,
+      "realLat": 37.800099,
+      "realLng": -122.435785,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 2600,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "above-range"
+    },
+    {
+      "id": "sf-valencia-mission",
+      "sourceRecordId": "ORIG600",
+      "coordsSnapped": true,
+      "distanceMi": 0.03,
+      "realLat": 37.758351,
+      "realLng": -122.420958,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 1800,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-hayes-valley",
+      "sourceRecordId": "ORIG243",
+      "coordsSnapped": true,
+      "distanceMi": 0.04,
+      "realLat": 37.776543,
+      "realLng": -122.423583,
+      "realAddress": null,
+      "realRateCard": "Est. $7.5k-$18k / 4 weeks",
+      "realEstimatedCpm": "Est. $8-$18 CPM",
+      "modeledWeeklyCostUsd": 1700,
+      "realRateCardWeeklyRange": [
+        1875,
+        4500
+      ],
+      "priceFit": "below-range"
+    },
+    {
+      "id": "sf-sunset-irving",
+      "sourceRecordId": "ORIG382",
+      "coordsSnapped": true,
+      "distanceMi": 0.0,
+      "realLat": 37.763789,
+      "realLng": -122.475693,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 1250,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-financial-montgomery",
+      "sourceRecordId": "ORIG64",
+      "coordsSnapped": true,
+      "distanceMi": 0.11,
+      "realLat": 37.795693,
+      "realLng": -122.400755,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 3100,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "above-range"
+    },
+    {
+      "id": "sf-union-square",
+      "sourceRecordId": "KAB26",
+      "coordsSnapped": true,
+      "distanceMi": 0.03,
+      "realLat": 37.787182,
+      "realLng": -122.40794,
+      "realAddress": null,
+      "realRateCard": "Est. $7.5k-$18k / 4 weeks",
+      "realEstimatedCpm": "Est. $8-$18 CPM",
+      "modeledWeeklyCostUsd": 3400,
+      "realRateCardWeeklyRange": [
+        1875,
+        4500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-soma-harrison",
+      "sourceRecordId": "ORIG727",
+      "coordsSnapped": true,
+      "distanceMi": 0.04,
+      "realLat": 37.773345,
+      "realLng": -122.408478,
+      "realAddress": null,
+      "realRateCard": "Est. $7.5k-$18k / 4 weeks",
+      "realEstimatedCpm": "Est. $8-$18 CPM",
+      "modeledWeeklyCostUsd": 2200,
+      "realRateCardWeeklyRange": [
+        1875,
+        4500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-richmond-geary",
+      "sourceRecordId": "ORIG363",
+      "coordsSnapped": true,
+      "distanceMi": 0.01,
+      "realLat": 37.780701,
+      "realLng": -122.464481,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 1400,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-dogpatch-3rd",
+      "sourceRecordId": "ORIG1188",
+      "coordsSnapped": true,
+      "distanceMi": 0.05,
+      "realLat": 37.757764,
+      "realLng": -122.388611,
+      "realAddress": null,
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 1250,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "in-range"
+    },
+    {
+      "id": "sf-embarcadero-ferry",
+      "sourceRecordId": "ORIG631",
+      "coordsSnapped": true,
+      "distanceMi": 0.15,
+      "realLat": 37.793371,
+      "realLng": -122.394233,
+      "realAddress": "1 MARKET ST, SAN FRANCISCO, CA ",
+      "realRateCard": "Est. $4k-$10k / 4 weeks",
+      "realEstimatedCpm": "Est. $6-$14 CPM",
+      "modeledWeeklyCostUsd": 3300,
+      "realRateCardWeeklyRange": [
+        1000,
+        2500
+      ],
+      "priceFit": "above-range"
+    }
+  ]
+}

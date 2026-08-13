@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Your work and life, perfectly in sync.",
+      "subline": "iPhone, Mac, and iPad work together effortlessly.",
+      "rationale": "High-contrast minimalist design captures busy Mission commuters and creative professionals instantly.",
+      "imageUrl": "/generated/b0773bb60cd613f0-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Tu creatividad fluye sin interrupciones.",
+      "subline": "Diseña, crea y comparte entre todos tus dispositivos Apple.",
+      "rationale": "Appeals directly to local Latino creatives and artists with a native, culturally resonant message.",
+      "imageUrl": "/generated/b0773bb60cd613f0-1.png"
+    }
+  ]
+}

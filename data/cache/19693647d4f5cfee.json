@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Slow mornings. Sharp espresso.",
+      "subline": "Your neighborhood micro-roaster on Valencia Street.",
+      "rationale": "Targets foot traffic seeking slow morning rituals with a bold, minimalist coffee visual.",
+      "imageUrl": "/generated/19693647d4f5cfee-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Café de origen, alma de barrio.",
+      "subline": "Tu espacio de inspiración y espresso en Valencia.",
+      "rationale": "Connects with the local Spanish-speaking creative community through a shared love for craft.",
+      "imageUrl": "/generated/19693647d4f5cfee-1.png"
+    }
+  ]
+}

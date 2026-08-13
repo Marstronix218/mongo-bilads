@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close your month in a day.",
+      "subline": "Automated books and real-time runway for fast-growing startups.",
+      "rationale": "Directly targets the FiDi commuter's core pain point with a high-contrast, time-saving promise.",
+      "imageUrl": "/generated/d9942c3fe46a4e19-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the spreadsheet panic.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "An emotional hook for stressed tech workers craving peace of mind and reclaimed time.",
+      "imageUrl": "/generated/d9942c3fe46a4e19-1.png"
+    }
+  ]
+}

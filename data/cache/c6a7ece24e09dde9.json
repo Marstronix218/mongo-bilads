@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Own the city.",
+      "subline": "The lightweight, long-range electric commuter bike.",
+      "rationale": "High-contrast urban visual appeals to Mission creatives; direct headline targets frustrated commuters.",
+      "imageUrl": "/generated/c6a7ece24e09dde9-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Sin tráfico. Sin límites. Solo muévete.",
+      "subline": "La bicicleta eléctrica ligera con máxima autonomía.",
+      "rationale": "Culturally resonant, active Spanish copy paired with premium, night-friendly visuals for Mission nightlife.",
+      "imageUrl": "/generated/c6a7ece24e09dde9-1.png"
+    }
+  ]
+}

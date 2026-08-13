@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Your work and life, perfectly synced.",
+      "subline": "Move effortlessly between devices with the Apple ecosystem.",
+      "rationale": "Bold, minimal layout with a high-contrast tech aesthetic tailored for SoMa's fast-paced commuters.",
+      "imageUrl": "/generated/6480db1dd715c1f6-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "One seamless flow. All day.",
+      "subline": "Integrated hardware and software designed for active professionals.",
+      "rationale": "Connects creative work and active fitness lifestyles instantly for a 3-second drive-by read.",
+      "imageUrl": "/generated/6480db1dd715c1f6-1.png"
+    }
+  ]
+}

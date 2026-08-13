@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Fuel your next breakthrough.",
+      "subline": "Single-origin espresso and local art in the Dogpatch.",
+      "rationale": "High-contrast, bold imagery appeals to tech-creatives seeking artisanal fuel on their daily commute.",
+      "imageUrl": "/generated/e247387cb538092b-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Slow mornings. Late-night pour-overs.",
+      "subline": "Your neighborhood micro-roaster is now open.",
+      "rationale": "Captures the transition from morning routine to evening creative flow for Dogpatch locals.",
+      "imageUrl": "/generated/e247387cb538092b-1.png"
+    }
+  ]
+}

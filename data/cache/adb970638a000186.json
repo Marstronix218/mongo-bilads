@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close your month in a day.",
+      "subline": "Automated books and real-time runway for fast-growing startups.",
+      "rationale": "High-contrast, high-speed message tailored for anxious SoMa founders stuck in traffic.",
+      "imageUrl": "/generated/adb970638a000186-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the spreadsheet anxiety.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "Visualizes the pain of manual spreadsheets, offering instant relief to commuting tech professionals.",
+      "imageUrl": "/generated/adb970638a000186-1.png"
+    }
+  ]
+}

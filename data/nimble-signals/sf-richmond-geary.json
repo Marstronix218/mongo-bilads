@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-richmond-geary",
+  "location": "Geary Blvd @ 20th Ave (Richmond)",
+  "signals": [
+    "19 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Construction company (6), Tax preparation service (5), Accountant (4), Shipping and mailing service (2)",
+    "9 rated venues nearby, avg rating 4.0/5",
+    "Audience fit: Richmond — families, commuters, foodies",
+    "Live web (1 day ago): Acclaimed Berkeley Restaurant, Rose Pizzeria, Opens in the Richmond — There has been palpable excitement in the Richmond District ever since Rose Pizzeria, the popular Berkeley-ba…",
+    "Live web (4 days ago): San Francisco's New Restaurant Openings — The new SF restaurant openings you should know about."
+  ],
+  "source_urls": [
+    "https://richmondsf.org/event/heart-of-the-richmond-district-night-market-2/2026-08-15/",
+    "https://missionlocal.org/2026/05/richmond-local-business-by-locals/",
+    "https://www.sf.gov/perfect-day-inner-richmond"
+  ],
+  "confidence": 0.9,
+  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "nearbyBusinessCount": 19,
+  "live": {
+    "signals": [
+      "Live web (1 day ago): Acclaimed Berkeley Restaurant, Rose Pizzeria, Opens in the Richmond — There has been palpable excitement in the Richmond District ever since Rose Pizzeria, the popular Berkeley-ba…",
+      "Live web (4 days ago): San Francisco's New Restaurant Openings — The new SF restaurant openings you should know about."
+    ],
+    "source_urls": [
+      "https://richmondsf.org/event/heart-of-the-richmond-district-night-market-2/2026-08-15/",
+      "https://missionlocal.org/2026/05/richmond-local-business-by-locals/",
+      "https://www.sf.gov/perfect-day-inner-richmond"
+    ],
+    "query": "Richmond District San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:23.495Z"
+  }
+}

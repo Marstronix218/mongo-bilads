@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Save the planet.",
+      "subline": "The lightweight, long-range electric commuter bike.",
+      "rationale": "High-contrast emerald green grabs attention instantly in high-traffic SoMa, emphasizing eco-friendly premium commuting.",
+      "imageUrl": "/generated/1e5b8ee0a6791043-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Your new commute has zero emissions.",
+      "subline": "App-unlocked, lightweight, and built to bypass city traffic.",
+      "rationale": "Tech-forward, high-contrast aesthetic that appeals directly to the SoMa startup and tech crowd.",
+      "imageUrl": "/generated/1e5b8ee0a6791043-1.png"
+    }
+  ]
+}

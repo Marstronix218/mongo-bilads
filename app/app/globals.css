@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bilads-bg: #0B0B0B;
+  --color-bilads-fg: #F5F1E8;
+  --color-bilads-accent: #F5D400;
+  --color-bilads-surface: #2A2A2A;
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--color-bilads-bg);
+  color: var(--color-bilads-fg);
+}
+
+/* Leaflet overrides for dark theme */
+.leaflet-container {
+  background: #1a1a1a;
+}

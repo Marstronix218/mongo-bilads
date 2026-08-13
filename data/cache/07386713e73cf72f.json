@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Fueling the Mission's creative spark.",
+      "subline": "Artisanal single-origin espresso and late-night pour-overs.",
+      "rationale": "High-contrast imagery and bold copy capture local creatives walking by on Valencia Street.",
+      "imageUrl": "/generated/07386713e73cf72f-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Café local para mentes creativas.",
+      "subline": "Tu punto de encuentro en el corazón del barrio.",
+      "rationale": "Appeals directly to the neighborhood's Spanish-speaking community with a warm, welcoming local invitation.",
+      "imageUrl": "/generated/07386713e73cf72f-1.png"
+    }
+  ]
+}

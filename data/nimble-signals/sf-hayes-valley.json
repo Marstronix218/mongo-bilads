@@ -1,0 +1,33 @@
+{
+  "boardId": "sf-hayes-valley",
+  "location": "Hayes St @ Octavia (Hayes Valley)",
+  "signals": [
+    "7 nearby businesses mapped within 0.3 mi",
+    "Dominant nearby categories: Software company (4), Internet marketing service (4), Office (2), Corporate office (2)",
+    "4 rated venues nearby, avg rating 4.1/5",
+    "Audience fit: Hayes Valley — foodies, creatives, walkable",
+    "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
+    "Live web: 22 Fun Things to Do This Week (3.02.26) — Think spring this week.Forget the forecasts—spring is in the air and with it comes new flavors, flowers, and…"
+  ],
+  "source_urls": [
+    "https://www.sf.gov/perfect-day-hayes-valley",
+    "https://www.instagram.com/reel/DMtmsmwOb0m/",
+    "https://hayesvalleysf.org/welcome-to-hayes-valley/"
+  ],
+  "confidence": 0.76,
+  "derivedFrom": "google-places-nearby (real) + nimble-live-search",
+  "nearbyBusinessCount": 7,
+  "live": {
+    "signals": [
+      "Live web (4 days ago): San Francisco's New Restaurant Openings — Every new restaurant and bar in San Francisco, your head might spin. So just read this list instead. These ar…",
+      "Live web: 22 Fun Things to Do This Week (3.02.26) — Think spring this week.Forget the forecasts—spring is in the air and with it comes new flavors, flowers, and…"
+    ],
+    "source_urls": [
+      "https://www.sf.gov/perfect-day-hayes-valley",
+      "https://www.instagram.com/reel/DMtmsmwOb0m/",
+      "https://hayesvalleysf.org/welcome-to-hayes-valley/"
+    ],
+    "query": "Hayes Valley San Francisco new business openings and events",
+    "fetchedAt": "2026-07-13T22:26:11.232Z"
+  }
+}

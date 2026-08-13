@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Own the city.",
+      "subline": "Lightweight frame. Unlimited range. No parking required.",
+      "rationale": "High-contrast color block grabs foot traffic; appeals to young professionals wanting to bypass Mission traffic.",
+      "imageUrl": "/generated/5470ca6adaf0342a-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Tu ciudad. Sin límites ni tráfico.",
+      "subline": "Bicicleta eléctrica premium con desbloqueo inteligente y gran autonomía.",
+      "rationale": "Resonates with local creative culture and Spanish speakers looking for a seamless daily commute.",
+      "imageUrl": "/generated/5470ca6adaf0342a-1.png"
+    }
+  ]
+}

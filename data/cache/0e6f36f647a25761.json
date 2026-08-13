@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Fueling Dogpatch's creative flow.",
+      "subline": "Single-origin espresso, local art, and slow mornings.",
+      "rationale": "High-contrast minimalist visual targeting local creatives and tech professionals walking by on 3rd Street.",
+      "imageUrl": "/generated/0e6f36f647a25761-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "From morning pour-overs to late-night ideas.",
+      "subline": "Your neighborhood micro-roaster and creative hub.",
+      "rationale": "Appeals to the neighborhood's dual appetite for artisanal coffee and late-night creative energy.",
+      "imageUrl": "/generated/0e6f36f647a25761-1.png"
+    }
+  ]
+}

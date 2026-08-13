@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close the month in a day.",
+      "subline": "Automated books and real-time runway for fast-growing startups.",
+      "rationale": "High-contrast dark-mode aesthetic appeals to SoMa tech commuters and delivers a 3-second speed benefit.",
+      "imageUrl": "/generated/2eb9110ebfcb30d0-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Stop sweating the spreadsheet.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "Uses a clean, anxiety-reducing visual metaphor to contrast against chaotic manual spreadsheet errors.",
+      "imageUrl": "/generated/2eb9110ebfcb30d0-1.png"
+    }
+  ]
+}

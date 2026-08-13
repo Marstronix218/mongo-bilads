@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close your month in a day.",
+      "subline": "Automated books and real-time runway for fast-growing startups.",
+      "rationale": "Direct benefit headline with high-contrast, minimalist visuals tailored for busy tech commuters.",
+      "imageUrl": "/generated/355945025fe9920a-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the chaotic spreadsheets.",
+      "subline": "One trusted dashboard for your entire finance team.",
+      "rationale": "Plays on the audience's pain point of chaotic spreadsheets with a bold, metaphorical visual.",
+      "imageUrl": "/generated/355945025fe9920a-1.png"
+    }
+  ]
+}

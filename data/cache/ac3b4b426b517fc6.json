@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Fueling the Mission's late-night brushstrokes.",
+      "subline": "Single-origin espresso and local art till late.",
+      "rationale": "Appeals to the local creative nightlife and artist community with a moody, high-contrast aesthetic.",
+      "imageUrl": "/generated/ac3b4b426b517fc6-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Café local para mentes que nunca duermen.",
+      "subline": "Prensa fría y espresso en el corazón del barrio.",
+      "rationale": "Connects directly with Spanish-speaking creatives and commuters using a bold, artistic, and familiar visual.",
+      "imageUrl": "/generated/ac3b4b426b517fc6-1.png"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Skip the gridlock. Save the planet.",
+      "subline": "The premium electric commuter bike with long range.",
+      "rationale": "High-contrast minimalist visual that instantly resonates with eco-conscious SoMa tech commuters stuck in traffic.",
+      "imageUrl": "/generated/5d349f66055586bb-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Your new commute has no parking spot.",
+      "subline": "Lightweight, app-unlocked, and built for daily city riders.",
+      "rationale": "Directly targets the universal San Francisco frustration of parking with a premium, tech-forward aesthetic.",
+      "imageUrl": "/generated/5d349f66055586bb-1.png"
+    }
+  ]
+}

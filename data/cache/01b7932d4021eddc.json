@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Close the month in a day.",
+      "subline": "Automated books and real-time runway for fast-growing startups.",
+      "rationale": "High-contrast speed claim tailored for anxious, time-starved founders commuting through SoMa.",
+      "imageUrl": "/generated/01b7932d4021eddc-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Ditch the manual spreadsheet errors.",
+      "subline": "One trusted finance dashboard to secure your next board meeting.",
+      "rationale": "Directly targets the specific anxiety of board meetings with a high-status, aspirational visual.",
+      "imageUrl": "/generated/01b7932d4021eddc-1.png"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Fuel your creative flow.",
+      "subline": "Single-origin espresso and local art on 24th.",
+      "rationale": "Appeals to Mission creatives and commuters with a high-contrast, art-focused local morning hook.",
+      "imageUrl": "/generated/afc559a8581f3dda-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "es",
+      "headline": "Café local, alma del barrio.",
+      "subline": "Pinturas en la pared y espresso en tu taza.",
+      "rationale": "Connects deeply with the Latino arts community using culturally resonant, warm, and inviting imagery.",
+      "imageUrl": "/generated/afc559a8581f3dda-1.png"
+    }
+  ]
+}
