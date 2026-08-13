@@ -517,7 +517,7 @@ export interface AgentRunRecord {
     id: string;
     campaignId: string;
     agent: AgentName;
-    model: string; // GMI model id used
+    model: string; // OpenAI model id used
     /** hash of the input payload, for dedupe / cache-hit inspection */
     inputHash: string;
     /** raw JSON string the agent returned (post-parse), for auditing */

@@ -6,7 +6,7 @@
  */
 import type { ProductBrief, ResearchResponse } from "@/lib/types";
 import { chatJson } from "./parse";
-import type { ChatMessage } from "./gmi";
+import type { ChatMessage } from "./openai";
 import { nimblePromptBlock, nimbleFallbackFinding, NIMBLE_TAG } from "./nimble";
 
 export type ResearcherBlock = ResearchResponse["researcher"];

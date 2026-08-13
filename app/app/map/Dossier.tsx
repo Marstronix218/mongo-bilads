@@ -253,7 +253,7 @@ function ActionBtn({
 
 function MockupCard({ state }: { state: Async<MockupResponse> }) {
   if (state.status === "loading")
-    return <Spinner text="Rendering board mockup (~20s, GMI image queue)…" />;
+    return <Spinner text="Rendering board mockup with OpenAI…" />;
   if (state.status === "error")
     return <ErrorLine text={`Mockup failed (${state.error}).`} />;
   const m = state.data;

@@ -1,7 +1,7 @@
 /**
  * VLM attention testing (Peel-style "Vision Studio" lite).
  *
- * Sends a generated creative to the vision-capable GMI chat model and asks
+ * Sends a generated creative to the vision-capable OpenAI model and asks
  * what a passer-by would actually notice: first eye landing, legibility,
  * brand recall, shareability. Failure chain matches the rest of the app:
  * live VLM → deterministic heuristic scored from the copy itself.

@@ -503,7 +503,7 @@ function CreativePanel({
                           </p>
                           <p className="text-[9px] font-mono text-bilads-fg/25">
                             {report.source === "vlm"
-                              ? "Vision model · GMI Cloud"
+                              ? "Vision model · OpenAI"
                               : "Heuristic fallback (no vision)"}
                           </p>
                         </div>
@@ -524,7 +524,7 @@ function CreativePanel({
 
             {/* Sponsor badges */}
             <div className="flex items-center justify-center gap-6 text-[10px] font-mono text-bilads-fg/30">
-              <span>Creatives by GMI Cloud</span>
+              <span>Creatives by OpenAI</span>
               <span className="text-bilads-fg/10">|</span>
               <span>Intelligence by Nimble</span>
             </div>
