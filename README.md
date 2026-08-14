@@ -6,6 +6,10 @@ Bilads is an AI-assisted billboard planning workspace for San Francisco. Give it
 
 The project is a Next.js application with MongoDB Atlas as its production system of record and a local development fallback. Fireworks powers language, vision, image generation, and the optional semantic-memory layer; LangGraph provides resumable human approval; ElevenLabs turns approved campaign briefs into audio; and OpenRouter is isolated to a machine-only model evaluation lab. Deterministic scoring and local fallbacks keep the core demo usable when optional live integrations are unavailable.
 
+## Demo video
+
+[Watch the Bilads demo on YouTube](https://youtu.be/jXLWPkNEQKk)
+
 ## What it includes
 
 - Product onboarding from a website, an uploaded image, or three built-in samples
