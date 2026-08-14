@@ -161,6 +161,8 @@ export interface AdConcept {
 export interface GenerateResponse {
     /** exactly 2 */
     concepts: AdConcept[];
+    /** execution path reported by the API; omitted in persisted cache files */
+    executionMode?: "live" | "fallback" | "cache" | "mixed";
 }
 
 /* ============================================================================
@@ -516,7 +518,7 @@ export interface AgentRunRecord {
     id: string;
     campaignId: string;
     agent: AgentName;
-    model: string; // OpenAI model id used
+    model: string; // inference model id used
     /** hash of the input payload, for dedupe / cache-hit inspection */
     inputHash: string;
     /** raw JSON string the agent returned (post-parse), for auditing */

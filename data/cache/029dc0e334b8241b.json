@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "Finance without the fire drill.",
+      "subline": "Automated books and live runway for fast-moving startups.",
+      "rationale": "A calmer alternate angle gives FiDi finance teams an immediate operational benefit.",
+      "imageUrl": "/generated/d9942c3fe46a4e19-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Know your runway. Every morning.",
+      "subline": "One trusted dashboard for your whole finance team.",
+      "rationale": "Daily clarity is a concise, credible promise for startup operators and founders.",
+      "imageUrl": "/generated/d9942c3fe46a4e19-1.png"
+    }
+  ]
+}

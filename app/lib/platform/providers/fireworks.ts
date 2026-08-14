@@ -13,10 +13,10 @@ import { jsonBody, providerFetch, requiredSecret } from "../inference/http";
 
 const PROVIDER = "fireworks" as const;
 const BASE_URL = "https://api.fireworks.ai/inference/v1";
-const DEFAULT_CHAT_MODEL = "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507";
+const DEFAULT_CHAT_MODEL = "accounts/fireworks/models/qwen3p7-plus";
 const DEFAULT_IMAGE_MODEL = "accounts/fireworks/models/flux-1-schnell-fp8";
-const DEFAULT_EMBEDDING_MODEL = "accounts/fireworks/models/qwen3-embedding-8b";
-const DEFAULT_RERANK_MODEL = "accounts/fireworks/models/qwen3-reranker-8b";
+const DEFAULT_EMBEDDING_MODEL = "fireworks/qwen3-embedding-8b";
+const DEFAULT_RERANK_MODEL = "fireworks/qwen3-reranker-8b";
 
 interface FireworksConfig {
   apiKey: string;
@@ -128,7 +128,7 @@ export async function fireworksStructuredChat<T>(request: ChatRequest & {
 
 interface FireworksImageResponse {
   image?: string;
-  base64?: string;
+  base64?: string | string[];
   seed?: number;
   data?: Array<{ b64_json?: string; url?: string; seed?: number }>;
 }
@@ -139,7 +139,7 @@ async function imageBytes(data: FireworksImageResponse, signal?: AbortSignal): P
   seed?: number;
 }> {
   const item = data.data?.[0];
-  const encoded = item?.b64_json || data.base64 || data.image;
+  const encoded = item?.b64_json || (Array.isArray(data.base64) ? data.base64[0] : data.base64) || data.image;
   if (encoded) {
     const match = encoded.match(/^data:([^;]+);base64,([\s\S]*)$/);
     return {
@@ -175,6 +175,8 @@ export async function fireworksImage(request: ImageRequest): Promise<ImageResult
   const cfg = config();
   const model = request.model || cfg.imageModel;
   const endpointModel = model.replace(/^\/+/, "");
+  const ratio = (request.width ?? 1536) / (request.height ?? 768);
+  const aspectRatio = ratio >= 2.05 ? "21:9" : ratio >= 1.55 ? "16:9" : ratio >= 1.2 ? "4:3" : "1:1";
   const response = await providerFetch({
     provider: PROVIDER,
     url: `${cfg.baseUrl}/workflows/${endpointModel}/text_to_image`,
@@ -186,14 +188,12 @@ export async function fireworksImage(request: ImageRequest): Promise<ImageResult
       headers: { ...headers(cfg.apiKey), accept: "image/png, application/json" },
       body: JSON.stringify({
         prompt: request.prompt,
-        width: request.width ?? 1536,
-        height: request.height ?? 768,
+        aspect_ratio: aspectRatio,
         ...(request.seed === undefined ? {} : { seed: request.seed }),
         ...(request.guidanceScale === undefined
           ? {}
           : { guidance_scale: request.guidanceScale }),
         ...(request.steps === undefined ? {} : { num_inference_steps: request.steps }),
-        output_format: "PNG",
       }),
     },
   });

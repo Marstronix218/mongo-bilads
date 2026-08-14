@@ -218,9 +218,6 @@ export function createMongoRepositories(workspaceId = DEFAULT_WORKSPACE_ID): {
         if (concept.position !== expected) throw new Error("concept positions must be ordered from zero");
         const filter = { workspace_id: workspaceId, campaign_id: args.campaignId, idempotency_key: args.idempotencyKey, position: concept.position };
         let variant: CreativeVariantRow | null = await variants.findOne(filter);
-        if (variant && (variant.headline !== concept.headline || variant.billboard_id !== args.billboardId)) {
-          throw new Error("idempotency key already belongs to different creative data");
-        }
         if (!variant) {
           variant = {
             id: randomUUID(), workspace_id: workspaceId, campaign_id: args.campaignId,
@@ -237,6 +234,19 @@ export function createMongoRepositories(workspaceId = DEFAULT_WORKSPACE_ID): {
           }
         }
         if (!variant) throw new Error("creative variant could not be stored");
+        if (
+          variant.billboard_id !== args.billboardId ||
+          variant.generation !== args.generation ||
+          variant.consistent_brand !== args.consistentBrand ||
+          variant.concept_key !== concept.id ||
+          variant.language !== concept.language ||
+          variant.headline !== concept.headline ||
+          variant.subline !== (concept.subline ?? "") ||
+          variant.rationale !== (concept.rationale ?? "") ||
+          variant.source !== args.source
+        ) {
+          throw new Error("idempotency key already belongs to different creative data");
+        }
         ids.push(variant.id);
         if (concept.asset?.key && concept.asset.bucket === "generated-creatives") {
           await assets.updateOne(
@@ -269,9 +279,15 @@ export function createMongoRepositories(workspaceId = DEFAULT_WORKSPACE_ID): {
       }
       const approvalsCollection = collection<ApprovalRow>(database, "approvals");
       const filter = { workspace_id: workspaceId, campaign_id: args.campaignId, request_id: args.requestId };
-      const existing = await approvalsCollection.findOne(filter);
+      const matches = (approval: ApprovalRow) =>
+        approval.decision === args.decision &&
+        approval.room_id === (args.roomId || null) &&
+        approval.decided_by_subject === args.decidedBySubject &&
+        approval.note === (args.note || null) &&
+        stableJson(approval.context) === stableJson(args.context ?? {});
+      let existing = await approvalsCollection.findOne(filter);
       if (existing) {
-        if (existing.decision !== args.decision || existing.room_id !== (args.roomId || null)) {
+        if (!matches(existing)) {
           throw new Error("request_id already belongs to a different approval");
         }
         return existing;
@@ -285,9 +301,10 @@ export function createMongoRepositories(workspaceId = DEFAULT_WORKSPACE_ID): {
       try { await approvalsCollection.insertOne(row); return row; }
       catch (error) {
         if ((error as { code?: number }).code !== 11000) throw error;
-        const raced = await approvalsCollection.findOne(filter);
-        if (!raced) throw error;
-        return raced;
+        existing = await approvalsCollection.findOne(filter);
+        if (!existing) throw error;
+        if (!matches(existing)) throw new Error("request_id already belongs to a different approval");
+        return existing;
       }
     },
   };

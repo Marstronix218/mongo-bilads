@@ -1,16 +1,21 @@
-# Bilads — data (Godson)
+# Bilads data guide
 
-Everything the Media Buyer, map, and creative composites read from. Schema is the
-single source of truth in `types.ts` §7; don't rename fields here.
+Everything the Media Buyer, map, and creative composites read from. The canonical
+schema lives in `types.ts`; don't rename fields here without updating consumers.
 
 ## Files
 
-- `billboards.json` — 14 SF boards, §8 schema. **Coordinates are real** — each board is
+- `billboards.json` — 14 SF boards using the shared billboard schema. **Coordinates are real** — each board is
   pinned to the nearest SF Planning permit record (see provenance below).
 - `billboards.provenance.json` — maps each `id` → the real permit `record_id`, real
-  coordinates, real rate-card range, and CPM band it was grounded against. This is the
+  coordinates, real rate-card range, and CPM range it was grounded against. This is the
   answer sheet for the "is this real data?" Q&A.
 - `traffic-heatmap.json` — 304 weighted `[lat, lng, intensity]` points for `leaflet.heat`. Regenerate with `node scripts/gen-heatmap.mjs`.
+- `signals/` — committed per-placement market and location signals consumed by
+  the research path. These keep local and demo runs deterministic.
+- `creative-seed/` — seed examples used by optional creative-memory workflows.
+- `cache/` — committed demo-generation responses used to avoid live-provider
+  latency during deterministic demo runs.
 - `samples.ts` — 3 prefill briefs (Volt / Fog City Coffee / Ledgerly).
 - `../scripts/gen-heatmap.mjs` — heatmap generator (corridors: 101 / 280 / Market / Mission / Marina).
 - `../scripts/check-demomatch.mjs` — sanity check: simulates Researcher interests, prints top-3 per sample under both scoring orientations.
@@ -37,24 +42,17 @@ profiles. Impressions/foot-traffic are order-of-magnitude estimates consistent w
 vendor listings (AdQuick / Blip). Roadmap answer: the schema already matches what live
 inventory APIs return; grounding on real permit records is the first step.
 
-## ⚠️ Contract flag for Noriaki — §5 scoring formula naming is inverted
+## Scoring contract
 
-`CampaignParams.awarenessWeight` says **"1 = pure awareness"**, but the §5 formula
-`valueScore = ((1-w)*dailyImpressions + w*targetReach*3)/weeklyCostUsd` makes **w=1
-weight targetReach** (i.e. *targeted*, not awareness). Naming and math disagree.
-
-The data is tuned to the **documented field meaning** (w=1 = awareness = raw
-impressions per dollar), i.e. this form:
+`CampaignParams.awarenessWeight` uses `1` for pure awareness and `0` for pure
+audience targeting. The data is tuned to that contract:
 
 ```
 valueScore = (w*dailyImpressions + (1-w)*targetReach*3) / weeklyCostUsd
 ```
 
-Recommend backend adopt this form so the slider label matches behavior. If backend
-keeps the literal §5 formula instead, the frontend must pass `w = 1 - awarenessWeight`.
-Either fix works — just pick one and note it in team chat (per §7.8). Left unresolved,
-the "targeted" end of the slider ranks a low-fit board (Mission, demoMatch 0.10) #1,
-which reads as broken on stage.
+The scoring implementation, frontend label, PRD, and demo-match validation must
+preserve this orientation together.
 
 ## demoMatch sanity check (intended formula, default slider positions)
 
@@ -66,20 +64,20 @@ which reads as broken on stage.
 | Ledgerly SaaS (w .5) | $3500 | Montgomery/FiDi · Market/Powell · 101 Vermont |
 
 Dragging Volt awareness→targeted swaps Mission out for Marina and lifts Harrison —
-that's the on-stage "slider reorders the pins" moment (§13.4). Sunset is deliberately
-low-fit for Volt and never enters its top 3 (stays in the data, not featured — §8).
+that's the on-stage "slider reorders the pins" moment. Sunset is deliberately
+low-fit for Volt and never enters its top 3.
 
-## ⚠️ adCorners are demo annotations — still need seller/photo verification
+## `adCorners` are demo annotations
 
 The current `/public/billboards/<id>.jpg` assets are Street View frames selected
 for demo visibility, and each board's `adCorners` is an approximate `[TL, TR, BR,
 BL]` quad over the visible ad/sign face in that frame. This is good enough for a
-demo mockup, but still not seller-grade production inventory. To finish (§ Godson
-1:00–2:00):
+demo mockup, but still not seller-grade production inventory. Before production:
 
 1. Collect or license one seller-approved photo per `id` with a big front-facing rectangular board → save as `/public/billboards/<id>.jpg`.
 2. Open each, read the 4 blank-board corner pixels in **TL, TR, BR, BL** order, overwrite `adCorners`.
-3. Hand one photo + corners to Steven for a composite smoke-test before annotating the rest.
+3. Run one photo and corner set through the composite endpoint before annotating
+   the rest.
 
 Sample product images also still need generating → `/public/samples/{volt,fog-city,ledgerly}.png` (paths already referenced in `samples.ts`).
 
@@ -90,4 +88,4 @@ young professionals · fitness · outdoors · eco-conscious · affluent · creat
 foodies · coffee · nightlife · walkable · latino · families · students · suburban ·
 value-seekers · tourists · shoppers
 
-If a winner ever looks wrong, adjust `audienceTags`, **not** the scoring math (§8).
+If a winner ever looks wrong, adjust `audienceTags`, **not** the scoring math.

@@ -9,6 +9,7 @@
  * well-formed request.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeApiRequest } from "@/lib/apiAuth";
 import {
   runAttention,
   heuristicAttention,
@@ -19,11 +20,27 @@ import {
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const auth = await authorizeApiRequest(req, { allowMachine: true });
+  if (auth.response) return auth.response;
+
   let input: AttentionInput;
   try {
     const body = (await req.json()) as Partial<AttentionInput>;
-    if (!body.imageUrl || !body.headline || !body.productName) {
+    if (
+      typeof body.imageUrl !== "string" ||
+      typeof body.headline !== "string" ||
+      typeof body.productName !== "string" ||
+      !body.imageUrl ||
+      !body.headline ||
+      !body.productName
+    ) {
       throw new Error("imageUrl, headline, and productName are required");
+    }
+    if (body.imageUrl.length > 1_000 || body.headline.length > 300 || body.productName.length > 160) {
+      throw new Error("attention input is too large");
+    }
+    if (body.subline !== undefined && (typeof body.subline !== "string" || body.subline.length > 500)) {
+      throw new Error("subline is invalid");
     }
     input = body as AttentionInput;
   } catch (e) {

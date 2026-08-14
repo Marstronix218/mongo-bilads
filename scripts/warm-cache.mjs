@@ -1,5 +1,5 @@
 // Pre-warm data/cache/ before the demo (Phase 5): creates a durable campaign,
-// gets deterministic sample rankings, then hits /api/generate?live=1 for every
+// gets deterministic sample rankings, then hits /api/generate?warm=1 for every
 // sample × top board × variants 0-1. Run with the dev server up and valid model
 // credentials, then commit data/cache/ and public/generated/ for offline use.
 //
@@ -97,16 +97,45 @@ async function main() {
           variant,
         };
         const t0 = Date.now();
-        const gen = await fetch(`${BASE}/api/generate?live=1`, {
+        const gen = await fetch(`${BASE}/api/generate?warm=1`, {
           method: "POST",
           headers: JSON_HEADERS,
           body: JSON.stringify(body),
         });
-        const out = await gen.json();
-        const placeholder = out.concepts?.some((c) => c.imageUrl.includes("placeholder"));
+        const raw = await gen.text();
+        let out;
+        try {
+          out = JSON.parse(raw);
+        } catch {
+          throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: invalid JSON (${gen.status}): ${raw.slice(0, 300)}`);
+        }
+        if (!gen.ok) {
+          throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: generation failed (${gen.status}): ${raw.slice(0, 300)}`);
+        }
+        if (!Array.isArray(out.concepts) || out.concepts.length !== 2) {
+          throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: expected exactly two concepts`);
+        }
+        const imageUrls = out.concepts.map((concept) => concept.imageUrl);
+        if (imageUrls.some((url) => typeof url !== "string" || !url.startsWith("/generated/"))) {
+          throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: cache is not offline-safe: ${JSON.stringify(imageUrls)}`);
+        }
+        for (const imageUrl of imageUrls) {
+          const asset = await fetch(new URL(imageUrl, BASE));
+          if (!asset.ok || !asset.headers.get("content-type")?.startsWith("image/")) {
+            throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: missing generated asset ${imageUrl}`);
+          }
+        }
+        const verified = await fetch(`${BASE}/api/generate?demo=1`, {
+          method: "POST",
+          headers: JSON_HEADERS,
+          body: JSON.stringify({ ...body, requestId: crypto.randomUUID() }),
+        });
+        const verifiedBody = await verified.json();
+        if (!verified.ok || verifiedBody.executionMode !== "cache") {
+          throw new Error(`${sample.brief.productName}/${billboardId}/v${variant}: demo cache verification failed (${verified.status})`);
+        }
         console.log(
-          `  ${billboardId} v${variant}: ${gen.status} in ${((Date.now() - t0) / 1000).toFixed(1)}s` +
-            (placeholder ? "  ⚠️ placeholder image — live gen failed, NOT a real warm" : "  ✓")
+          `  ${billboardId} v${variant}: ${gen.status} in ${((Date.now() - t0) / 1000).toFixed(1)}s ✓`
         );
       }
     }

@@ -5,8 +5,8 @@
  * sampleId; sample briefs have stable productNames, so keys stay stable).
  */
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, join } from "node:path";
 import type { GenerateResponse } from "@/lib/types";
 import { dataDir } from "./paths";
 
@@ -31,6 +31,18 @@ export function readGenerateCache(key: string): GenerateResponse | null {
   } catch {
     return null;
   }
+}
+
+/** A stage-safe demo entry must contain exactly two committed local images. */
+export function isDemoCacheReady(value: GenerateResponse | null): value is GenerateResponse {
+  if (!value || value.concepts.length !== 2) return false;
+  const publicDir = existsSync(join(process.cwd(), "public"))
+    ? join(process.cwd(), "public")
+    : join(process.cwd(), "app", "public");
+  return value.concepts.every((concept) =>
+    /^\/generated\/[A-Za-z0-9._-]+$/.test(concept.imageUrl)
+    && existsSync(join(publicDir, "generated", basename(concept.imageUrl)))
+  );
 }
 
 export function writeGenerateCache(key: string, value: GenerateResponse): void {

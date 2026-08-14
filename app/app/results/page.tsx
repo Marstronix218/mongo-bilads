@@ -11,6 +11,7 @@ import type {
   Billboard,
   AudienceProfile,
   AdConcept,
+  GenerateResponse,
   SimulationOutput,
   DailyPoint,
 } from "@/lib/types";
@@ -306,11 +307,13 @@ function CreativePanel({
   const [concepts, setConcepts] = useState<AdConcept[]>([]);
   const [loading, setLoading] = useState(true);
   const [creativeError, setCreativeError] = useState<string | null>(null);
+  const [creativeMode, setCreativeMode] = useState<GenerateResponse["executionMode"] | null>(null);
   const [variants, setVariants] = useState([0, 0]);
   const [consistentBrand, setConsistentBrand] = useState(false);
   // VLM attention reports, keyed by the concept's imageUrl (stable per art).
   const [attention, setAttention] = useState<Record<string, AttentionReport | "loading">>({});
   const generationRequests = useRef(new Map<string, string>());
+  const latestCreativeRequest = useRef(0);
 
   const testAttention = useCallback(
     async (concept: AdConcept) => {
@@ -343,8 +346,10 @@ function CreativePanel({
 
   const fetchConcepts = useCallback(
     async (variant = 0, forceLive = false) => {
+      const requestSequence = ++latestCreativeRequest.current;
       setLoading(true);
       setCreativeError(null);
+      setCreativeMode(null);
       try {
         const endpoint = demoMode
           ? "/api/generate?demo=1"
@@ -372,11 +377,14 @@ function CreativePanel({
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Creative generation failed");
+        if (requestSequence !== latestCreativeRequest.current) return;
         setConcepts(data.concepts);
+        setCreativeMode(data.executionMode ?? null);
       } catch (error) {
+        if (requestSequence !== latestCreativeRequest.current) return;
         setCreativeError(error instanceof Error ? error.message : "Creative generation failed");
       } finally {
-        setLoading(false);
+        if (requestSequence === latestCreativeRequest.current) setLoading(false);
       }
     },
     [campaignId, board.id, brief, audienceProfile, consistentBrand, demoMode]
@@ -413,7 +421,11 @@ function CreativePanel({
             </h2>
             {demoMode && (
               <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.16em] text-bilads-accent">
-                Demo cache · stage-safe
+                {creativeMode === "cache"
+                  ? "Demo cache · stage-safe"
+                  : creativeMode
+                    ? "Staged fallback · stage-safe"
+                    : "Loading staged creative…"}
               </p>
             )}
           </div>
@@ -421,10 +433,11 @@ function CreativePanel({
             <input
               type="checkbox"
               checked={consistentBrand}
+              disabled={demoMode}
               onChange={(e) => setConsistentBrand(e.target.checked)}
-              className="accent-bilads-accent"
+              className="accent-bilads-accent disabled:opacity-40"
             />
-            Consistent brand
+            {demoMode ? "Consistent brand (live runs)" : "Consistent brand"}
           </label>
         </div>
 
@@ -825,6 +838,7 @@ export default function ResultsPage() {
   const [showRoom, setShowRoom] = useState(false);
   const [blobsData, setBlobsData] = useState<BlobsResult | null>(null);
   const [demoMode, setDemoMode] = useState(false);
+  const [demoSampleId, setDemoSampleId] = useState<string | null>(null);
 
   // Create the durable campaign first, then run and persist research against it.
   useEffect(() => {
@@ -854,6 +868,7 @@ export default function ResultsPage() {
         setBrief(b);
         setCampaign(c);
         setDemoMode(isDemo);
+        setDemoSampleId(launch.sampleId ?? null);
       }
     });
 
@@ -1030,12 +1045,13 @@ export default function ResultsPage() {
           <input
             type="number"
             value={campaign.weeklyBudgetUsd}
+            disabled={demoMode}
             onChange={(e) =>
               handleCampaignChange({
                 weeklyBudgetUsd: Number(e.target.value),
               })
             }
-            className="w-24 bg-bilads-bg border border-bilads-fg/10 rounded px-2 py-1 text-bilads-fg"
+            className="w-24 bg-bilads-bg border border-bilads-fg/10 rounded px-2 py-1 text-bilads-fg disabled:opacity-50"
           />
         </div>
         {demoMode && (
@@ -1047,16 +1063,17 @@ export default function ResultsPage() {
           <span className="text-bilads-fg/40">Targeted</span>
           <input
             type="range"
-            min={0}
-            max={1}
+            min={demoSampleId === "volt" ? 0.15 : 0}
+            max={demoSampleId === "volt" ? 0.7 : 1}
             step={0.05}
             value={campaign.awarenessWeight}
+            disabled={demoMode && demoSampleId !== "volt"}
             onChange={(e) =>
               handleCampaignChange({
                 awarenessWeight: Number(e.target.value),
               })
             }
-            className="flex-1 accent-bilads-accent"
+            className="flex-1 accent-bilads-accent disabled:opacity-50"
           />
           <span className="text-bilads-fg/40">Awareness</span>
         </div>

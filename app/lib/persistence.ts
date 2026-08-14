@@ -19,6 +19,11 @@ function mongoEnabled(): boolean {
   return Boolean(process.env.MONGODB_URI?.trim());
 }
 
+/** Exposes the selected persistence mode without leaking a Mongo client into domain code. */
+export function mongodbPersistenceConfigured(): boolean {
+  return mongoEnabled();
+}
+
 function mongoRepositories() {
   return createMongoRepositories(WORKSPACE_ID);
 }
@@ -109,26 +114,63 @@ export async function recordProductAsset(args: {
   const campaign = await mongoRepositories().campaigns.get(args.campaignId);
   if (!campaign) throw new Error("campaign not found");
   const database = await mongoDatabase();
-  await database.collection("creative_assets").updateOne(
-    { bucket_name: args.stored.bucket, object_key: args.stored.key },
-    {
-      $setOnInsert: {
-        id: randomUUID(),
-        workspace_id: WORKSPACE_ID,
-        campaign_id: args.campaignId,
-        creative_variant_id: null,
-        asset_kind: "product_source",
-        bucket_name: args.stored.bucket,
-        object_key: args.stored.key,
-        storage_url: args.stored.url,
-        mime_type: args.stored.mimeType,
-        byte_size: args.stored.byteSize,
-        sha256: args.stored.sha256,
-        created_at: new Date().toISOString(),
-      },
-    },
-    { upsert: true }
-  );
+  const assets = database.collection<{
+    id: string;
+    bucket_name: string;
+    object_key: string;
+    campaign_id: string;
+    workspace_id: string;
+    creative_variant_id: null;
+    asset_kind: "product_source";
+    storage_url: string;
+    sha256: string | null;
+    mime_type: string;
+    byte_size: number | null;
+    created_at: string;
+  }>("creative_assets");
+  const filter = { bucket_name: args.stored.bucket, object_key: args.stored.key };
+  const existing = await assets.findOne(filter);
+  if (existing) {
+    if (
+      existing.workspace_id !== WORKSPACE_ID ||
+      existing.campaign_id !== args.campaignId ||
+      existing.sha256 !== args.stored.sha256 ||
+      existing.mime_type !== args.stored.mimeType ||
+      existing.byte_size !== args.stored.byteSize
+    ) {
+      throw new Error("product asset key already belongs to different content");
+    }
+    return;
+  }
+  try {
+    await assets.insertOne({
+      id: randomUUID(),
+      workspace_id: WORKSPACE_ID,
+      campaign_id: args.campaignId,
+      creative_variant_id: null,
+      asset_kind: "product_source",
+      bucket_name: args.stored.bucket,
+      object_key: args.stored.key,
+      storage_url: args.stored.url,
+      mime_type: args.stored.mimeType,
+      byte_size: args.stored.byteSize,
+      sha256: args.stored.sha256,
+      created_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    if ((error as { code?: number }).code !== 11000) throw error;
+    const raced = await assets.findOne(filter);
+    if (
+      !raced ||
+      raced.workspace_id !== WORKSPACE_ID ||
+      raced.campaign_id !== args.campaignId ||
+      raced.sha256 !== args.stored.sha256 ||
+      raced.mime_type !== args.stored.mimeType ||
+      raced.byte_size !== args.stored.byteSize
+    ) {
+      throw new Error("product asset key already belongs to different content");
+    }
+  }
 }
 
 export async function recordAgentMessage(

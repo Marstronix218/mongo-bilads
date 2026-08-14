@@ -10,7 +10,7 @@ import {
 
 export const CHAT_MODEL =
   process.env.FIREWORKS_CHAT_MODEL ??
-  "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507";
+  "accounts/fireworks/models/qwen3p7-plus";
 export const VISION_MODEL = process.env.FIREWORKS_VISION_MODEL ?? CHAT_MODEL;
 export const IMAGE_MODEL =
   process.env.FIREWORKS_IMAGE_MODEL ??

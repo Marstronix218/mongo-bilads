@@ -1,0 +1,20 @@
+{
+  "concepts": [
+    {
+      "id": "concept-0",
+      "language": "en",
+      "headline": "The Marina commute, upgraded.",
+      "subline": "Premium electric power for every San Francisco hill.",
+      "rationale": "A premium alternate keeps the targeted-slider reveal specific to Marina commuters.",
+      "imageUrl": "/generated/06e1b4adc83edd09-0.png"
+    },
+    {
+      "id": "concept-1",
+      "language": "en",
+      "headline": "Trade traffic for the waterfront.",
+      "subline": "Ride farther without parking, fuel, or compromise.",
+      "rationale": "The waterfront angle connects Volt with the neighborhood's active outdoor lifestyle.",
+      "imageUrl": "/generated/06e1b4adc83edd09-1.png"
+    }
+  ]
+}

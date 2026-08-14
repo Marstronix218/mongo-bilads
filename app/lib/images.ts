@@ -7,7 +7,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { image } from "./inference";
-import { uploadFile } from "./persistence";
+import { mongodbPersistenceConfigured, uploadFile } from "./persistence";
 
 const GENERATED_BUCKET = "generated-creatives";
 
@@ -46,14 +46,23 @@ export async function generateAdImage(
   index: number,
   placeholderText: string,
   forceRegenerate = false,
-  storageScope?: { workspaceId: string; campaignId: string }
+  storageScope?: { workspaceId: string; campaignId: string },
+  preferLocalArtifact = false
 ): Promise<GeneratedImageResult> {
   const filename = `${cacheKey}-${index}.png`;
   const urlPath = `/generated/${filename}`;
   const diskPath = join(generatedDir(), filename);
-  if (!forceRegenerate && existsSync(diskPath)) return { imageUrl: urlPath };
+  if ((preferLocalArtifact || !mongodbPersistenceConfigured()) && !forceRegenerate && existsSync(diskPath)) {
+    return { imageUrl: urlPath };
+  }
   try {
     const bytes = await image(prompt);
+
+    if (preferLocalArtifact) {
+      mkdirSync(generatedDir(), { recursive: true });
+      writeFileSync(diskPath, bytes);
+      return { imageUrl: urlPath };
+    }
 
     try {
       const stored = await uploadFile(
@@ -65,8 +74,9 @@ export async function generateAdImage(
         "image/png"
       );
       return { imageUrl: stored.url, asset: stored };
-    } catch {
-      // Fall through to the plain public/generated path below.
+    } catch (error) {
+      if (mongodbPersistenceConfigured()) throw error;
+      // Local development without MongoDB may use public/generated.
     }
 
     mkdirSync(generatedDir(), { recursive: true });

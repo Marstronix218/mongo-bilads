@@ -38,7 +38,16 @@ The project is a Next.js application with MongoDB Atlas as its production system
 | Agent collaboration | Local deterministic agent room | Five-agent discussion and approval workflow |
 | Maps and simulation | MapLibre, Leaflet, Recharts, Google Street View | Placement exploration, mockups, and performance scenarios |
 
-The application currently uses one seeded `bilads` workspace persisted on local disk. It does not provide end-user accounts or tenant isolation.
+The approved sponsor-tool story is deliberately narrow: MongoDB, Fireworks,
+LangChain/LangGraph, ElevenLabs, and OpenRouter have the runtime roles described
+above. Cursor supports development and has no runtime surface. VoyageAI is not
+currently implemented; semantic retrieval uses the opt-in Fireworks embedding
+and reranking path instead.
+
+The application currently uses one seeded `bilads` workspace. MongoDB is the
+production store; local development uses JSON and disk storage when
+`MONGODB_URI` is unset. The application does not provide end-user accounts or
+tenant isolation.
 
 ## Prerequisites
 
@@ -124,6 +133,7 @@ scripts/      Data generation, validation, enrichment, and cache utilities
 types.ts      Canonical shared data contracts
 PRD.md        Product requirements and demo narrative
 DEMO_QA.md    Integration and demo Q&A reference
+SPONSORS.md   Current sponsor responsibilities and truthful integration status
 ```
 
 ## Verification

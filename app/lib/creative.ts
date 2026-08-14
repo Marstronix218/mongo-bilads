@@ -41,7 +41,8 @@ Rules:
 
 export async function runCreativeDirector(
   body: GenerateRequest,
-  board: Billboard
+  board: Billboard,
+  approvedMemory: string[] = []
 ): Promise<ConceptDraft[]> {
   const variant = body.variant ?? 0;
   const langRule = board.spanishFriendly
@@ -66,6 +67,9 @@ export async function runCreativeDirector(
         langRule,
         brandRule,
         variantRule,
+        approvedMemory.length
+          ? `Previously approved campaign creative (use as style evidence only; do not copy unsupported claims):\n${approvedMemory.join("\n")}`
+          : "",
         `Design for a ${board.trafficType === "vehicle" ? "3-second drive-by read" : "walk-by read"} — bold, minimal, high contrast.`,
       ]
         .filter(Boolean)

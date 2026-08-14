@@ -9,17 +9,22 @@
  * for a recordId that isn't in the GASP inventory.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeApiRequest } from "@/lib/apiAuth";
 import { getInventoryBoard } from "@/lib/inventory";
 import { generateMockup, type MockupInput } from "@/lib/mockup";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const auth = await authorizeApiRequest(req, { allowMachine: true });
+  if (auth.response) return auth.response;
+
   let body: MockupInput;
   try {
     body = (await req.json()) as MockupInput;
     for (const field of ["recordId", "advertiserName", "category", "address"] as const) {
       if (typeof body?.[field] !== "string" || !body[field]) throw new Error(`missing ${field}`);
+      if (body[field].length > 500) throw new Error(`${field} is too long`);
     }
   } catch (e) {
     return NextResponse.json(

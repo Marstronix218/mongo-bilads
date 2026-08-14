@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
+import { authorizeApiRequest } from "@/lib/apiAuth";
 import { chat, InferenceUnavailableError, VISION_MODEL } from "@/lib/inference";
 
 export const runtime = "nodejs";
@@ -78,7 +79,10 @@ function isRateLimit(err: unknown): boolean {
   );
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const auth = await authorizeApiRequest(req, { allowMachine: true });
+  if (auth.response) return auth.response;
+
   let body: { imageUrl?: string; imageW?: number; imageH?: number; boardName?: string };
   try {
     body = (await req.json()) as typeof body;
@@ -89,7 +93,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
   const imageUrl = body.imageUrl;
   const imageW = Number(body.imageW ?? 0);
   const imageH = Number(body.imageH ?? 0);
-  if (!imageUrl || !/^data:image\//i.test(imageUrl) || imageW <= 0 || imageH <= 0) {
+  if (!imageUrl || imageUrl.length > 14_000_000 || !/^data:image\//i.test(imageUrl) || imageW <= 0 || imageH <= 0) {
     return NextResponse.json({ quad: null, source: "error", reason: "imageUrl, imageW, and imageH are required" }, { status: 400 });
   }
 

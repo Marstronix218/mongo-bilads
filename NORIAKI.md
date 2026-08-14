@@ -1,245 +1,84 @@
-# Noriaki — Backend & Agent Architecture
+# Noriaki — Backend & Agent Architecture Lead
 
-**Role:** API endpoints, agent logic, GMI Cloud client, BAND/Kylon/InsForge backend integration.
+**Role:** API contracts, Fireworks inference, deterministic agent fallbacks, MongoDB persistence, LangGraph approval, approved audio, and governed model evaluation.
 
-> **Status (2026-07-13, branch `noriaki`)** — all code phases implemented and verified offline:
-> `lib/gmi.ts` (20s-timeout chat+image), `/api/research` (mock via `?mock=1` + real agents +
-> deterministic fallback; Nimble signals injected, `[Nimble] `-prefixed findings for badges),
-> `/api/generate` (Creative Director → 2 parallel images → disk cache in `data/cache/`,
-> `?live=1` bypass, canned+placeholder fallback), `/api/band`, `/api/kylon`, `lib/insforge.ts`
-> (in-memory fallback when unconfigured). Scoring uses the **corrected formula** below; all three
-> samples reproduce data/README.md's expected top-3 table. `scripts/warm-cache.mjs` pre-warms the
-> demo cache once a key exists.
->
-> **Still blocked on humans:** GMI key + model IDs from Godson (then verify live round-trip and
-> run warm-cache), formula confirmation in team chat (§7.8), InsForge credentials (offline
-> fallback active until then), and the Phase-6 rehearsal.
-
-Noriaki owns everything behind the API: the three-agent pipeline, deterministic scoring, LLM orchestration, fallback paths, caching, and the backend integration of BAND, Kylon, and InsForge.
+Noriaki owns the server-side campaign pipeline. Live inference enriches the experience, while deterministic ranking, committed location signals, caches, and local fallbacks keep core flows available when optional services are unavailable.
 
 ---
 
-## Phase 0: Setup (0:00-0:15)
+## Current Architecture
 
-- [ ] Pair with Godson on GMI Cloud playground; confirm auth + latency
-- [ ] Create `lib/gmi.ts`:
-  - Export an `openai` client configured with GMI's `baseURL` and API key from `.env.local`
-  - Export two helpers: `chat(messages, model)` and `image(prompt, model)`
-  - Model IDs come from Godson
-- [ ] Add `.env.local` with `GMI_API_KEY`; add to `.gitignore` (never commit keys)
-- [ ] Verify round-trip: one test chat call + one test image call succeed
-
----
-
-## Phase 1: Research Endpoint — Mock First (0:15-1:00)
-
-- [ ] Create `app/api/research/route.ts` — POST handler
-- [ ] Return hardcoded mock matching the `ResearchResponse` contract from `types.ts`:
-  - Researcher block: `audienceProfile`, `buyingTriggers[3]`, `adToneGuidance`, `findings[4]`
-  - Media Buyer block: `rankings[]` (all 14 boards, sorted by valueScore desc), `top3[]`, `findings[4]`
-- [ ] **Steven should be able to run the full frontend against this mock by 1:00**
-- [ ] Validate mock shape: every field present, correct types, no optional fields missing
+| Capability | Implementation |
+|---|---|
+| Production inference | Fireworks through `app/lib/platform/providers/fireworks.ts` |
+| Stable inference facade | `app/lib/inference.ts` |
+| Research and planning | `app/app/api/research/route.ts`, `app/lib/researcher.ts`, `app/lib/mediaBuyer.ts` |
+| Creative generation | `app/app/api/generate/route.ts`, `app/lib/creative.ts` |
+| Vision review | `app/app/api/attention/route.ts`, `app/lib/attention.ts` |
+| Persistence | `app/lib/persistence.ts` with MongoDB Atlas/GridFS or local fallback |
+| Human approval | `app/lib/platform/workflows/langgraph.ts` and `app/lib/platform/workflows/creativeApproval.ts` |
+| Approval API | `app/app/api/workflows/creative-approval/*/route.ts` |
+| Approved audio | `app/app/api/audio/route.ts` and the ElevenLabs provider |
+| Model evaluation | Machine-only `app/app/api/model-lab/route.ts` through OpenRouter |
+| Review room | Deterministic `app/lib/room.ts` exposed by `app/app/api/room/route.ts` |
 
 ---
 
-## Phase 2: Research Endpoint — Real Agents (1:00-2:00)
+## Core Pipeline
 
-### Researcher Agent
-
-- [ ] System prompt: strict JSON output only, no prose, no code fences
-- [ ] User message: brief (name, description, audience) + optional image (if vision-capable model)
-- [ ] Expected output: `{ audienceProfile, buyingTriggers, adToneGuidance, findings }`
-- [ ] Implement `parseJsonStrict(text)` utility:
-  - Strip ` ```json ` fences
-  - `JSON.parse` in try/catch
-  - One silent retry with prompt: "return only valid JSON — no prose, no code fences"
-  - Then throw (caller handles fallback)
-
-### Media Buyer Agent
-
-- [ ] **Deterministic scoring math FIRST** (not LLM-dependent):
-  ```
-  demoMatch = Jaccard(audienceProfile.interests, board.audienceTags)
-  targetReach = dailyImpressions * demoMatch
-  ```
-- [ ] **Formula (use corrected version per data/README.md):**
-  ```
-  valueScore = (w * dailyImpressions + (1-w) * targetReach * 3) / weeklyCostUsd
-  ```
-  Where `w = awarenessWeight` (w=1 means pure awareness = raw impressions per dollar)
-- [ ] Coordinate with Godson on which formula form to use — confirm in team chat
-- [ ] `inBudget = board.weeklyCostUsd <= campaign.weeklyBudgetUsd`
-- [ ] Sort all boards by `valueScore` desc
-- [ ] `top3 = first 3 board ids where inBudget === true`
-- [ ] One LLM call: only job is to produce per-board `reason` strings (<=15 words each) and 4 `findings`
-- [ ] **Deterministic fallback:** if LLM call fails or returns bad JSON, still return rankings + canned reason template: `"Strong match on {top-3 overlapping tags}."`
-- [ ] App never dead-ends — user never sees failure
-
-### Sponsor: Nimble Integration in Research
-
-- [ ] Accept Nimble signal data (from `data/nimble-signals/`) as additional context for the Research Agent
-- [ ] Inject Nimble signals into the Researcher's prompt: nearby businesses, retail density, transit, events, competitor activity
-- [ ] Nimble data should demonstrably influence the `audienceProfile.interests` and `findings` output
-- [ ] Tag Nimble-sourced findings so the frontend can show "Source: Nimble" badges
+1. `/api/research` validates the brief and creates or updates campaign state.
+2. The Researcher uses Fireworks when configured and receives committed signals from `data/signals/`.
+3. The Media Buyer calculates rankings deterministically; generated prose only explains the math.
+4. `/api/generate` creates constrained concepts and 2:1 artwork through Fireworks, with cache and deterministic creative fallbacks.
+5. The local five-agent review room derives its discussion from real campaign, ranking, creative, and signal data.
+6. The LangGraph workflow interrupts at creative approval and resumes only after an explicit approve or reject request.
+7. MongoDB stores production campaign state and LangGraph checkpoints; GridFS stores durable binary assets.
+8. ElevenLabs can synthesize and cache a briefing only after the API verifies that the creative is approved.
+9. OpenRouter is restricted to authenticated machine evaluation in the Model Lab and is never an automatic production fallback.
 
 ---
 
-## Phase 3: Generate Endpoint (2:00-3:00)
+## Backend Checklist
 
-- [ ] Create `app/api/generate/route.ts` — POST handler
-- [ ] Validate body against `GenerateRequest` from `types.ts`
-- [ ] Load board from `billboards.json` by `billboardId`
+- [x] Keep request validation and response contracts aligned with `app/lib/types.ts`.
+- [x] Keep the scoring algorithm deterministic and independent of model output.
+- [x] Parse structured model responses defensively and fall back without dead-ending the user.
+- [x] Route language, vision, artwork, embeddings, and reranking through the Fireworks provider boundary.
+- [x] Inject committed location signals into research without making them a hard dependency.
+- [x] Persist campaign, creative, agent-run, message, approval, and asset records through `app/lib/persistence.ts`.
+- [x] Store binary assets through GridFS when MongoDB is configured.
+- [x] Keep local JSON/disk storage available for development.
+- [x] Require explicit human approval in the review room and LangGraph workflow.
+- [x] Use durable MongoDB checkpoints in production and in-memory checkpoints locally.
+- [x] Require approval verification before ElevenLabs briefing synthesis.
+- [x] Cache synthesized MP3s under the campaign-audio storage bucket.
+- [x] Keep the OpenRouter Model Lab machine-only, explicit, and isolated from production inference.
 
-### Creative Director Agent
+### Safety and Reliability Contracts
 
-- [ ] One LLM call with prompt per PRD §5:
-  - Input: brief + audienceProfile + board's neighborhood, audienceTags, trafficType, spanishFriendly
-  - `variant` param: `"concept #{variant}, use a different visual metaphor and color palette than previous"`
-  - `consistentBrand` param: `"keep visual identity consistent across neighborhoods"`
-  - Language rule: `spanishFriendly === true` -> one concept English, one Spanish; else two distinct English angles
-- [ ] Expected output: `{ concepts: [{id, language, headline, subline, imagePrompt, rationale}, {...}] }`
-- [ ] Parse with `parseJsonStrict`
-
-### Image Generation
-
-- [ ] Fire **two parallel** GMI Cloud image calls with each concept's `imagePrompt` at 1024x512 (or nearest supported)
-- [ ] Save images to `/public/generated/` with deterministic filenames
-- [ ] Return `{ concepts: [{..., imageUrl}, {...}] }`
-
-### Important: Content Safety
-
-- [ ] Do NOT let the image model invent logos, prices, nutritional claims, testimonials, or location facts
-- [ ] Image prompts should specify: "no text overlay, no logos, no claims" — text is added by frontend as HTML overlay
-- [ ] Only approved claims from the campaign brief are used
-
-### Disk Cache
-
-- [ ] Hash `(billboardId, sampleId, variant, consistentBrand)` -> save results to `data/cache/`
-- [ ] On subsequent identical calls, return from cache immediately
-- [ ] This is critical for demo reliability
+- Rankings come from code, not model judgment.
+- Generated imagery must not invent logos, prices, claims, testimonials, or location facts.
+- Billboard copy remains a controlled overlay rather than model-rendered text.
+- A failed live inference call must fall through to a cached or deterministic response.
+- Approval requests are idempotent and conflict-checked.
+- Raw audio transcripts and Model Lab prompts require machine authentication.
+- Provider credentials remain server-only and are loaded from environment variables.
 
 ---
 
-## Phase 4: Sponsor Backend Integration (2:00-3:00)
+## Verification Checklist
 
-### BAND — Agent Collaboration Room
-
-- [ ] Create `app/api/band/route.ts` — manages agent discussion state
-- [ ] Implement 5-agent BAND room logic:
-  | Agent | Role |
-  |---|---|
-  | Market Research Agent | Posts location findings from Nimble data |
-  | Media Planner Agent | Explains channel selection reasoning |
-  | Creative Director Agent | States concept rationale and constraints |
-  | Performance Analyst Agent | Posts simulation estimates |
-  | Risk and Brand Agent | Flags rejected variants with reasons |
-- [ ] Each agent produces a structured message: `{ agent, role, message, timestamp, action? }`
-- [ ] Risk Agent checks:
-  - Unsupported advertising claims
-  - Brand consistency
-  - Offensive localization
-  - Sensitive demographic targeting
-  - Unreadable billboard designs (viewing distance vs detail level)
-  - Unsuitable placements
-- [ ] Human approval step: final decisions require explicit approval before proceeding
-- [ ] Store discussion thread so frontend can render it as a conversation
-
-### Kylon — AI Workforce Management
-
-- [ ] Create `app/api/kylon/route.ts` — manages AI employee assignments
-- [ ] Track assignment lifecycle:
-  1. Research San Francisco campaign locations -> assigned to Research Agent
-  2. Produce three media plans -> assigned to Media Planner
-  3. Generate creative variants -> assigned to Creative Director
-  4. Prepare budget allocation -> assigned to Performance Analyst
-  5. Request approval -> triggers BAND room
-  6. Create final campaign package -> packaging step
-- [ ] Each assignment has status: `pending | in_progress | completed | blocked`
-- [ ] Kylon receives company context (brand guidelines, personas, approved claims) and passes to agents
-- [ ] **Key distinction:** Kylon = workforce management; BAND = collaborative decision-making
-
-### InsForge — Backend Infrastructure
-
-- [ ] Create `lib/insforge.ts` — InsForge client for:
-  - User authentication (login/signup/session)
-  - Database operations (campaigns, creatives, agent runs, approvals)
-  - File/image storage (product uploads, generated creatives)
-  - Agent job state tracking
-- [ ] Implement InsForge database tables:
-  ```
-  organizations, users, brands, products, campaigns,
-  target_audiences, candidate_locations, location_signals,
-  media_channels, creative_variants, simulations,
-  agent_runs, agent_messages, approvals
-  ```
-- [ ] Campaign CRUD: create, read, update status, list history
-- [ ] Store approval trail: every human decision recorded with timestamp and context
-- [ ] Campaign history: queryable by user, with full state restoration for "reopen" flow
-- [ ] Real-time agent status: track which agent is active, what it's processing
+- Run `npm --prefix app run typecheck`.
+- Run `npm --prefix app run lint`.
+- Run `npm --prefix app run build` for release verification.
+- Run `node scripts/validate-data.mjs` and `node scripts/validate-demo-cache.mjs`.
+- Check `GET /api/health/mongodb` in an Atlas-configured environment.
+- Exercise research, generation, review-room approval, LangGraph approve/reject, and approved-audio paths.
+- Confirm the core campaign flow still returns valid results with optional provider credentials removed.
+- Confirm `/api/model-lab` rejects browser access and works only with the configured machine credential.
 
 ---
 
-## Phase 5: Fallback + Timeout (3:00-3:30)
+## Q&A Ownership
 
-- [ ] Wrap every GMI call with `Promise.race([call, timeout(20000)])`:
-  - On timeout OR any thrown error in generate endpoint: load pre-cached result for current `sampleId + billboardId`
-  - If no cached result exists: use canned copy templates + placeholder image path
-- [ ] Add `?live=1` query param that bypasses the cache — Steven uses this for the on-stage regenerate moment
-- [ ] Confirm end-to-end: with wifi off, both endpoints still return valid data
-- [ ] Test the fallback chain:
-  1. Live API call (normal path)
-  2. Timeout after 20s -> cached result
-  3. No cache -> canned template (app never dead-ends)
-
----
-
-## Phase 6: Rehearsal (3:30-4:00)
-
-- [ ] Two dry-runs with Steven and Godson:
-  - Verify cached path is silent on failure (no error UI, no loading stall)
-  - Verify live regenerate hits the real endpoint and returns in <12s
-  - Verify BAND discussion renders with meaningful agent reasoning
-  - Verify Kylon assignments update status correctly
-- [ ] Prep answers for architecture Q&A:
-  - Three-agent design: Researcher -> Media Buyer -> Creative Director
-  - Deterministic ranking vs LLM reasoning (math decides rank, LLM writes the explanation)
-  - Why GMI Cloud: OpenAI-compatible API, one integration for both LLM + image gen
-  - BAND: agents expose reasoning and conflicts, require human approval
-  - Kylon vs BAND distinction: workforce management vs collaborative decision-making
-  - InsForge: real SaaS backend, not a scripted prototype
-  - Nimble: live market intelligence that changes recommendations
-  - Roadmap: multi-vertical (transit, DOOH, multi-city — same architecture)
-
----
-
-## Critical Technical Decisions
-
-### Formula Alignment (MUST RESOLVE)
-
-The `awarenessWeight` formula naming is inverted in the PRD. Use this corrected form:
-```
-valueScore = (w * dailyImpressions + (1-w) * targetReach * 3) / weeklyCostUsd
-```
-Where `w = awarenessWeight` and `w=1` means pure awareness (raw impressions per dollar).
-
-Confirm with Godson and Steven before implementing. If you use the literal PRD §5 formula instead, the frontend must pass `w = 1 - awarenessWeight`.
-
-### JSON Hygiene (All Agents)
-
-- JSON-only system prompts
-- Strip code fences from responses
-- `JSON.parse` in try/catch
-- One silent retry with "return only valid JSON"
-- Then deterministic fallback (never dead-end)
-
-### Image Generation Rules
-
-- Text is NEVER in the image — HTML overlays only
-- Image models garble text; overlays let us swap language/copy instantly
-- Prompts must specify no-text, no-logo constraints
-
----
-
-## Q&A Role
-
-Noriaki answers: agent architecture (3 agents, sequential, silent handoffs), deterministic scoring formula, GMI Cloud integration (OpenAI-compatible for both LLM + image), BAND multi-agent governance, Kylon workforce management, InsForge backend infrastructure, JSON parsing strategy, fallback/timeout design, roadmap to multi-vertical.
+Noriaki answers questions about the agent pipeline, deterministic ranking, Fireworks provider boundaries, fallback behavior, MongoDB Atlas and GridFS persistence, resumable LangGraph approvals, ElevenLabs approval gating, and the isolation of the OpenRouter Model Lab.

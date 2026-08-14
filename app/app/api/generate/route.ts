@@ -4,10 +4,11 @@ import { authorizeApiRequest } from "@/lib/apiAuth";
 import { getBoard } from "@/lib/boards";
 import { getCampaign } from "@/lib/campaigns";
 import { runCreativeDirector, fallbackConcepts, safeImagePrompt, type ConceptDraft } from "@/lib/creative";
-import { generateCacheKey, readGenerateCache, writeGenerateCache } from "@/lib/cache";
+import { generateCacheKey, isDemoCacheReady, readGenerateCache, writeGenerateCache } from "@/lib/cache";
 import { generateAdImage, placeholderUrl, type GeneratedImageResult } from "@/lib/images";
-import { finishAgentRun, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/persistence";
+import { finishAgentRun, mongodbPersistenceConfigured, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/persistence";
 import { CHAT_MODEL, IMAGE_MODEL } from "@/lib/inference";
+import { createFireworksRetrievalService } from "@/lib/platform/retrieval";
 import { SAMPLES } from "@/lib/samples";
 
 export const runtime = "nodejs";
@@ -61,7 +62,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const live = req.nextUrl.searchParams.get("live") === "1";
+    const warm = req.nextUrl.searchParams.get("warm") === "1";
+    const live = req.nextUrl.searchParams.get("live") === "1" || warm;
     const demo = req.nextUrl.searchParams.get("demo") === "1"
       && SAMPLES.some((sample) => sample.brief.productName === body.brief.productName.trim());
     const cacheKey = generateCacheKey({
@@ -90,15 +92,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         consistentBrand: false,
       });
       const base = readGenerateCache(baseCacheKey);
+      if (!isDemoCacheReady(base)) {
+        throw new Error(`Demo creative cache is not ready for ${body.brief.productName} on ${board.name}`);
+      }
       const drafts = fallbackConcepts({ productName: body.brief.productName, board });
       response = {
         concepts: drafts.map((draft, index) =>
           toConcept(draft, {
-            imageUrl: base?.concepts[index]?.imageUrl ?? placeholderUrl(body.brief.productName),
+            imageUrl: base.concepts[index].imageUrl,
           })
         ),
       };
-      path = base ? "cache" : "fallback";
+      path = "mixed";
       copyPath = "canned";
     } else if (!live && cached) {
       response = cached;
@@ -106,7 +111,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } else {
       let drafts: ConceptDraft[];
       try {
-        drafts = await runCreativeDirector(body, board);
+        let approvedMemory: string[] = [];
+        if (mongodbPersistenceConfigured()) {
+          try {
+            approvedMemory = (await createFireworksRetrievalService(campaign.workspace_id).search({
+              campaignId: campaign.id,
+              query: `${body.brief.productName} ${board.neighborhood} ${body.audienceProfile.interests.join(" ")}`,
+              kinds: ["approved_creative"],
+              limit: 3,
+            })).map((result) => result.text).slice(0, 3);
+          } catch {
+            // Creative generation does not depend on assistive memory availability.
+          }
+        }
+        drafts = await runCreativeDirector(body, board, approvedMemory);
       } catch {
         drafts = fallbackConcepts({ productName: body.brief.productName, board });
         copyPath = "canned";
@@ -119,8 +137,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             cacheKey,
             index,
             body.brief.productName,
-            live,
-            { workspaceId: campaign.workspace_id, campaignId: campaign.id }
+            live && !warm,
+            { workspaceId: campaign.workspace_id, campaignId: campaign.id },
+            warm
           )
         )
       );
@@ -161,7 +180,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       executionMode: path,
       output: { concepts: response.concepts.map((concept) => concept.headline), copyPath },
     });
-    return NextResponse.json(response);
+    return NextResponse.json({ ...response, executionMode: path });
   } catch (error) {
     await finishAgentRun({
       run,

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type { Collection, Db } from "mongodb";
 import { mongoDatabase, mongodbConfigured } from "@/lib/mongodb";
 import { resumeApprovalGraph, startApprovalGraph } from "./langgraph";
@@ -14,6 +14,8 @@ export interface CreativeApprovalState {
   status: CreativeApprovalStatus;
   graphStarted: boolean;
   graphResumed: boolean;
+  graphResumeOwner?: string;
+  graphResumeLeaseUntil?: string;
   decision?: { requestId: string; note: string | null; decidedBy: string; decidedAt: string };
   processedRequestIds: string[];
   revision: number;
@@ -104,7 +106,34 @@ class MongoCreativeApprovalStore implements CreativeApprovalStore {
 
 const globalWorkflows = globalThis as typeof globalThis & {
   biladsCreativeApprovalMemory?: MemoryCreativeApprovalStore;
+  biladsCreativeApprovalStarts?: Map<string, Promise<void>>;
+  biladsCreativeApprovalResumes?: Map<string, Promise<CreativeApprovalState>>;
 };
+
+function stableJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  return `{${Object.entries(value as Record<string, unknown>)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`)
+    .join(",")}}`;
+}
+
+async function startGraphOnce(state: CreativeApprovalState): Promise<void> {
+  const starts = (globalWorkflows.biladsCreativeApprovalStarts ??= new Map());
+  const active = starts.get(state.threadId);
+  if (active) return active;
+  const run = startApprovalGraph(state.threadId, {
+    campaignId: state.campaignId,
+    creative: state.creative,
+  });
+  starts.set(state.threadId, run);
+  try {
+    await run;
+  } finally {
+    if (starts.get(state.threadId) === run) starts.delete(state.threadId);
+  }
+}
 
 export async function defaultCreativeApprovalStore(): Promise<CreativeApprovalStore> {
   if (mongodbConfigured()) return new MongoCreativeApprovalStore(await mongoDatabase());
@@ -149,11 +178,11 @@ export class CreativeApprovalWorkflow {
     if (!saved.processedRequestIds.includes(input.requestId)) {
       throw new WorkflowConflictError("threadId already exists with a different start request");
     }
+    if (stableJson(saved.creative) !== stableJson(input.creative)) {
+      throw new WorkflowConflictError("start request already belongs to different creative data");
+    }
     if (!saved.graphStarted) {
-      await startApprovalGraph(saved.threadId, {
-        campaignId: saved.campaignId,
-        creative: saved.creative,
-      });
+      await startGraphOnce(saved);
       const started: CreativeApprovalState = {
         ...saved,
         graphStarted: true,
@@ -192,6 +221,12 @@ export class CreativeApprovalWorkflow {
         if (current.status !== input.decision) {
           throw new WorkflowConflictError("requestId was already used for a different decision");
         }
+        if (
+          current.decision.note !== (input.note?.trim() || null) ||
+          current.decision.decidedBy !== input.decidedBy
+        ) {
+          throw new WorkflowConflictError("requestId was already used with different decision data");
+        }
         if (!current.graphResumed) return this.resumeRecordedDecision(current);
         return current;
       }
@@ -220,24 +255,81 @@ export class CreativeApprovalWorkflow {
   }
 
   private async resumeRecordedDecision(state: CreativeApprovalState): Promise<CreativeApprovalState> {
-    if (!state.decision) throw new WorkflowConflictError("workflow decision is incomplete");
-    await resumeApprovalGraph(state.threadId, {
-      decision: state.status === "approved" ? "approved" : "rejected",
-      requestId: state.decision.requestId,
-      note: state.decision.note ?? undefined,
-      decidedBy: state.decision.decidedBy,
-    });
+    const resumes = (globalWorkflows.biladsCreativeApprovalResumes ??= new Map());
+    const active = resumes.get(state.threadId);
+    if (active) return active;
+    const run = this.claimAndResume(state);
+    resumes.set(state.threadId, run);
+    try {
+      return await run;
+    } finally {
+      if (resumes.get(state.threadId) === run) resumes.delete(state.threadId);
+    }
+  }
+
+  private async claimAndResume(initial: CreativeApprovalState): Promise<CreativeApprovalState> {
+    const owner = randomUUID();
+    let state = initial;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      if (state.graphResumed) return state;
+      if (!state.decision) throw new WorkflowConflictError("workflow decision is incomplete");
+      const leaseUntil = state.graphResumeLeaseUntil
+        ? Date.parse(state.graphResumeLeaseUntil)
+        : 0;
+      if (state.graphResumeOwner && leaseUntil > Date.now()) {
+        throw new WorkflowConflictError("workflow decision is resuming; retry the same requestId");
+      }
+      const claimed: CreativeApprovalState = {
+        ...state,
+        graphResumeOwner: owner,
+        graphResumeLeaseUntil: new Date(Date.now() + 60_000).toISOString(),
+        revision: state.revision + 1,
+        updatedAt: new Date().toISOString(),
+      };
+      if (await this.store.compareAndSet(state.revision, claimed)) {
+        return this.performResume(claimed, owner);
+      }
+      state = await this.status(state.threadId, state.campaignId);
+    }
+    throw new WorkflowConflictError("workflow decision is resuming; retry the same requestId");
+  }
+
+  private async performResume(state: CreativeApprovalState, owner: string): Promise<CreativeApprovalState> {
+    if (!state.decision || state.graphResumeOwner !== owner) {
+      throw new WorkflowConflictError("workflow resume lease was lost");
+    }
+    try {
+      await resumeApprovalGraph(state.threadId, {
+        decision: state.status === "approved" ? "approved" : "rejected",
+        requestId: state.decision.requestId,
+        note: state.decision.note ?? undefined,
+        decidedBy: state.decision.decidedBy,
+      });
+    } catch (error) {
+      const released: CreativeApprovalState = {
+        ...state,
+        revision: state.revision + 1,
+        updatedAt: new Date().toISOString(),
+      };
+      delete released.graphResumeOwner;
+      delete released.graphResumeLeaseUntil;
+      await this.store.compareAndSet(state.revision, released).catch(() => false);
+      throw error;
+    }
     const resumed: CreativeApprovalState = {
       ...state,
       graphResumed: true,
       revision: state.revision + 1,
       updatedAt: new Date().toISOString(),
     };
-    const saved = (await this.store.compareAndSet(state.revision, resumed))
-      ? resumed
-      : await this.status(state.threadId, state.campaignId);
-    if (saved.status === "approved") await this.callbacks.onApproved?.(saved);
-    else await this.callbacks.onRejected?.(saved);
+    delete resumed.graphResumeOwner;
+    delete resumed.graphResumeLeaseUntil;
+    const persisted = await this.store.compareAndSet(state.revision, resumed);
+    const saved = persisted ? resumed : await this.status(state.threadId, state.campaignId);
+    if (persisted) {
+      if (saved.status === "approved") await this.callbacks.onApproved?.(saved);
+      else await this.callbacks.onRejected?.(saved);
+    }
     return saved;
   }
 }
