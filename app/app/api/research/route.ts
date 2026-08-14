@@ -3,12 +3,12 @@ import type { ResearchRequest, ResearchResponse } from "@/lib/types";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { loadBoards } from "@/lib/boards";
 import { getCampaign } from "@/lib/campaigns";
-import { finishAgentRun, setCampaignResearch, startAgentRun } from "@/lib/localdb";
+import { finishAgentRun, setCampaignResearch, startAgentRun } from "@/lib/persistence";
 import { runResearcher, fallbackResearcher, type ResearcherBlock } from "@/lib/researcher";
 import { runMediaBuyer } from "@/lib/mediaBuyer";
 import { scoreBoards, cannedReason } from "@/lib/scoring";
 import { buildMockResearchResponse } from "@/lib/mock";
-import { CHAT_MODEL } from "@/lib/openai";
+import { CHAT_MODEL } from "@/lib/inference";
 
 export const runtime = "nodejs";
 
@@ -53,8 +53,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     let response: ResearchResponse;
     let executionMode: "live" | "fallback" | "cache" | "mixed" = "live";
 
-    if (req.nextUrl.searchParams.get("mock") === "1") {
-      response = buildMockResearchResponse();
+    if (
+      req.nextUrl.searchParams.get("mock") === "1"
+      || req.nextUrl.searchParams.get("demo") === "1"
+    ) {
+      response = buildMockResearchResponse(body.brief, body.campaign);
       executionMode = "cache";
     } else {
       const boards = loadBoards();

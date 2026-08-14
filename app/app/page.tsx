@@ -23,6 +23,7 @@ export default function Home() {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [launchingSampleId, setLaunchingSampleId] = useState<string | null>(null);
 
   const [siteUrl, setSiteUrl] = useState("");
   const [scanState, setScanState] = useState<"idle" | "scanning" | "error">("idle");
@@ -64,32 +65,37 @@ export default function Home() {
     []
   );
 
-  const prefillSample = useCallback(
-    (sampleId: string) => {
-      const sample = SAMPLES.find((s) => s.id === sampleId);
-      if (!sample) return;
-      setBrief(sample.brief);
-      setCampaign(sample.campaign);
-      setImagePreview(sample.productImagePath);
-    },
-    []
-  );
-
-  const handleDeploy = useCallback(async () => {
-    if (!brief.productName.trim()) return;
+  const launchCampaign = useCallback((
+    launchBrief: ProductBrief,
+    launchCampaignParams: CampaignParams,
+    sampleId?: string
+  ) => {
+    if (!launchBrief.productName.trim()) return;
     setLoading(true);
+    setLaunchingSampleId(sampleId ?? null);
     // Store form state in sessionStorage for the results page
     sessionStorage.setItem(
       "bilads-brief",
       JSON.stringify({
-        brief,
-        campaign,
+        brief: launchBrief,
+        campaign: launchCampaignParams,
+        sampleId,
         clientRequestId: crypto.randomUUID(),
         researchRequestId: crypto.randomUUID(),
       })
     );
     router.push("/results");
-  }, [brief, campaign, router]);
+  }, [router]);
+
+  const handleDeploy = useCallback(() => {
+    launchCampaign(brief, campaign);
+  }, [brief, campaign, launchCampaign]);
+
+  const launchSample = useCallback((sampleId: string) => {
+    const sample = SAMPLES.find((candidate) => candidate.id === sampleId);
+    if (!sample) return;
+    launchCampaign(sample.brief, sample.campaign, sample.id);
+  }, [launchCampaign]);
 
   return (
     <main className="min-h-screen flex flex-col items-center px-6 py-16">
@@ -266,14 +272,15 @@ export default function Home() {
         {/* Sample product cards */}
         <div>
           <p className="text-sm text-bilads-fg/40 mb-4 font-mono text-center">
-            Or try a sample product
+            One-click company demos
           </p>
           <div className="grid grid-cols-3 gap-4">
             {SAMPLES.map((sample) => (
               <button
                 key={sample.id}
-                onClick={() => prefillSample(sample.id)}
-                className="bg-bilads-surface border border-bilads-fg/10 rounded-lg p-4 text-left hover:border-bilads-accent/50 transition-colors group"
+                onClick={() => launchSample(sample.id)}
+                disabled={loading}
+                className="bg-bilads-surface border border-bilads-fg/10 rounded-lg p-4 text-left hover:border-bilads-accent/50 transition-colors group disabled:opacity-50 disabled:cursor-wait"
               >
                 <div className="w-full h-20 bg-bilads-bg/50 rounded mb-3 flex items-center justify-center overflow-hidden">
                   <img
@@ -290,7 +297,9 @@ export default function Home() {
                   {sample.brief.description}
                 </p>
                 <p className="text-xs text-bilads-accent mt-2 font-mono">
-                  ${sample.campaign.weeklyBudgetUsd}/wk
+                  {launchingSampleId === sample.id
+                    ? "Launching demo…"
+                    : `$${sample.campaign.weeklyBudgetUsd}/wk · Run demo →`}
                 </p>
               </button>
             ))}

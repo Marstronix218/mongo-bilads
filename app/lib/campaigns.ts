@@ -1,8 +1,8 @@
 import "server-only";
 
-import type { CampaignRow } from "./localdb";
+import type { CampaignRow } from "./persistence";
 
-export { getCampaign, listCampaigns, type CampaignRow } from "./localdb";
+export { getCampaign, listCampaigns, type CampaignRow } from "./persistence";
 
 export function campaignToApi(row: CampaignRow) {
   return {

@@ -11,7 +11,7 @@ import type { AdConcept, ResearchResponse } from "@/lib/types";
 import type { ProductBrief } from "@/lib/types";
 import { getBoard } from "./boards";
 import { signalForBoard, loadLocationSignals } from "./signals";
-import { recordAgentMessage } from "./localdb";
+import { recordAgentMessage } from "./persistence";
 
 export type RoomAgent =
   | "Market Research Agent"

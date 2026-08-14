@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { CampaignParams, ProductBrief } from "@/lib/types";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { campaignToApi, listCampaigns } from "@/lib/campaigns";
-import { createCampaign, recordProductAsset, removeFile, uploadFile, type StoredFile } from "@/lib/localdb";
+import { createCampaign, recordProductAsset, removeFile, uploadFile, type StoredFile } from "@/lib/persistence";
 
 export const runtime = "nodejs";
 

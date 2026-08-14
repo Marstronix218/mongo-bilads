@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeApiRequest } from "@/lib/apiAuth";
 import { getCampaign } from "@/lib/campaigns";
-import { finishAgentRun, recordApproval, startAgentRun } from "@/lib/localdb";
+import { finishAgentRun, recordApproval, startAgentRun } from "@/lib/persistence";
 import { startRoom, decideRoom, getRoom, type RoomContext, type ReviewRoom } from "@/lib/room";
 
 export const runtime = "nodejs";

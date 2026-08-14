@@ -1,7 +1,7 @@
 /**
  * VLM attention testing (Peel-style "Vision Studio" lite).
  *
- * Sends a generated creative to the vision-capable OpenAI model and asks
+ * Sends a generated creative to a Fireworks vision-language model and asks
  * what a passer-by would actually notice: first eye landing, legibility,
  * brand recall, shareability. Failure chain matches the rest of the app:
  * live VLM → deterministic heuristic scored from the copy itself.
@@ -9,7 +9,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { chatJson } from "./parse";
-import { downloadFile } from "./localdb";
+import { downloadFile } from "./persistence";
 
 export interface AttentionReport {
   /** What the eye lands on first, in the model's words. */
@@ -42,6 +42,7 @@ const STORED_CREATIVE_PATH = new RegExp(
   `^/storage/${GENERATED_BUCKET}/((?:[0-9a-f-]{36}/[0-9a-f-]{36}/)?generated/[\\w.-]+\\.png)$`,
   "i"
 );
+const GRIDFS_CREATIVE_PATH = /^\/api\/platform\/files\/generated-creatives\/([0-9a-f]{24})$/i;
 
 /** Load creative bytes from an allowlisted local path without permitting traversal. */
 export async function loadCreativePng(imageUrl: string): Promise<Buffer | null> {
@@ -51,10 +52,11 @@ export async function loadCreativePng(imageUrl: string): Promise<Buffer | null> 
   }
 
   const match = STORED_CREATIVE_PATH.exec(imageUrl);
-  if (!match) return null;
+  const gridfsMatch = GRIDFS_CREATIVE_PATH.exec(imageUrl);
+  if (!match && !gridfsMatch) return null;
 
   try {
-    const bytes = await downloadFile(GENERATED_BUCKET, match[1]);
+    const bytes = await downloadFile(GENERATED_BUCKET, match?.[1] ?? gridfsMatch![1]);
     const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     if (!bytes || bytes.length > MAX_CREATIVE_BYTES || !bytes.subarray(0, 8).equals(pngSignature)) {
       return null;

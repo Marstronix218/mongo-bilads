@@ -4,7 +4,7 @@
 
 Bilads is an AI-assisted billboard planning workspace for San Francisco. Give it a product brief, website, or image and it ranks affordable placements, generates neighborhood-aware creative concepts, places the creative into real street scenes, and simulates campaign reach and cost.
 
-The project is a Next.js application with a local file-backed system of record and a server-only MongoDB Atlas connection available for auxiliary persistence. OpenAI powers language, vision, and image generation, committed location-signal data enriches research, and a local five-agent review room handles discussion and approval. Deterministic scoring and local fallbacks keep the core demo usable when optional integrations are unavailable.
+The project is a Next.js application with MongoDB Atlas as its production system of record and a local development fallback. Fireworks powers language, vision, image generation, and the optional semantic-memory layer; LangGraph provides resumable human approval; ElevenLabs turns approved campaign briefs into audio; and OpenRouter is isolated to a machine-only model evaluation lab. Deterministic scoring and local fallbacks keep the core demo usable when optional live integrations are unavailable.
 
 ## What it includes
 
@@ -14,7 +14,9 @@ The project is a Next.js application with a local file-backed system of record a
 - English and Spanish neighborhood-aware creative variants
 - Generated billboard mockups and campaign performance simulations
 - A five-agent review room with explicit human approval
-- Saved campaigns, agent runs, decisions, and creative assets in a local store
+- Saved campaigns, agent runs, decisions, and versioned creative assets in MongoDB and GridFS
+- Resumable creative approval workflows and approved-briefing audio
+- A separately governed OpenRouter Model Lab for explicit challenger evaluations
 - A seller cockpit at `/map` for inventory and advertiser prospecting
 
 ## Architecture
@@ -22,9 +24,12 @@ The project is a Next.js application with a local file-backed system of record a
 | Layer | Technology | Responsibility |
 | --- | --- | --- |
 | Web application | Next.js 16, React 19, TypeScript | Onboarding, campaign workflow, maps, creative review, and API routes |
-| System of record | Local JSON store and disk storage (`app/.data`, `app/public/storage`) | Campaigns, agent runs, messages, approvals, and durable assets |
-| Auxiliary database | MongoDB Atlas | Server-only MongoDB access and connection health checks |
-| AI generation | OpenAI Responses and Image APIs | Audience research, planning copy, vision analysis, and billboard artwork |
+| System of record | MongoDB Atlas and GridFS | Campaigns, agent runs, messages, approvals, checkpoints, and durable assets |
+| Local compatibility | JSON and disk storage (`app/.data`, `app/public/storage`) | Development fallback only when `MONGODB_URI` is unset |
+| Production inference | Fireworks | Audience research, planning copy, vision analysis, artwork, embeddings, and reranking |
+| Resumable workflow | LangGraph with MongoDBSaver | Creative approval interrupt, durable checkpoint, and explicit resume |
+| Approved audio | ElevenLabs | Cached text-to-speech briefings after approval |
+| Model evaluation | OpenRouter | Explicit, machine-only challenger runs; never a silent production fallback |
 | Market intelligence | Committed location-signal data | Location and audience enrichment |
 | Agent collaboration | Local deterministic agent room | Five-agent discussion and approval workflow |
 | Maps and simulation | MapLibre, Leaflet, Recharts, Google Street View | Placement exploration, mockups, and performance scenarios |
@@ -34,8 +39,9 @@ The application currently uses one seeded `bilads` workspace persisted on local 
 ## Prerequisites
 
 - Node.js 20.9 or newer and npm
-- An OpenAI API key for live research, vision, and image generation
-- Optional MongoDB Atlas and Google Maps/Street View credentials
+- A Fireworks API key for live research, vision, and image generation
+- MongoDB Atlas for production persistence; local development works without it
+- Optional ElevenLabs, OpenRouter, and Google Maps/Street View credentials
 
 ## Local setup
 
@@ -53,7 +59,7 @@ The application currently uses one seeded `bilads` workspace persisted on local 
    cp .env.example app/.env.local
    ```
 
-   At minimum, configure `OPENAI_API_KEY`. Default OpenAI model IDs are listed in `.env.example`.
+   Configure `FIREWORKS_API_KEY` for live generation. Configure `MONGODB_URI` for production persistence. The remaining integrations are opt-in and documented in `.env.example`.
 
 3. Start the development server:
 
@@ -70,12 +76,15 @@ The commented template in `.env.example` is the source of truth. Keep all secret
 
 | Group | Variables | Required? |
 | --- | --- | --- |
-| MongoDB Atlas | `MONGODB_URI`, `MONGODB_DB` | URI required for MongoDB access; database defaults to `bilads` |
-| OpenAI | `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL`, `OPENAI_VISION_MODEL`, `OPENAI_IMAGE_MODEL` | API key required for live AI; model IDs have defaults |
+| MongoDB Atlas | `MONGODB_URI`, `MONGODB_DB`, `MONGODB_VECTOR_INDEX` | URI required in production; database defaults to `bilads` |
+| Fireworks | `FIREWORKS_API_KEY`, `FIREWORKS_*_MODEL`, `FIREWORKS_EMBEDDING_DIMENSIONS` | API key required for live AI; model IDs have defaults |
+| Semantic retrieval | `SEMANTIC_RETRIEVAL_ENABLED` | Off by default until a relevance evaluation passes |
+| ElevenLabs | `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `ELEVENLABS_MODEL_ID` | Optional; approved briefing audio |
+| OpenRouter | `OPENROUTER_API_KEY`, `OPENROUTER_EVAL_MODEL`, `OPENROUTER_PROVIDER_ORDER` | Optional; machine-only Model Lab |
 | Browser/API gates | `BILADS_APP_ORIGIN`, `BILADS_API_KEY` | App origin required in production; bearer key required for machine callers |
 | Street View | `GOOGLE_MAPS_API_KEY` or `GOOGLE_STREET_VIEW_API_KEY` | Optional |
 
-`OPENAI_API_KEY` and `MONGODB_URI` are server-only credentials and must never be exposed through a `NEXT_PUBLIC_*` variable. `BILADS_APP_ORIGIN` shapes same-origin browser requests but is not user authentication; restrict access at the deployment layer if the shared workspace should not be public. With the app running, `GET /api/health/mongodb` performs a credential-safe Atlas ping and returns only connection status.
+All provider keys and `MONGODB_URI` are server-only credentials and must never be exposed through a `NEXT_PUBLIC_*` variable. `BILADS_APP_ORIGIN` shapes same-origin browser requests but is not user authentication; restrict access at the deployment layer if the shared workspace should not be public. With the app running, `GET /api/health/mongodb` performs a credential-safe Atlas ping and returns only connection status.
 
 ## Common commands
 
@@ -126,4 +135,4 @@ npm run build
 
 There is no automated unit-test suite yet. The production build and data validation currently pass. The full lint command also scans existing generated `.vercel/output` files and reports pre-existing React effect violations in the results UI; address or exclude those before treating lint as a clean quality gate.
 
-Live integrations intentionally fall back where possible; campaigns persist to the local store with no external services required. Generated performance figures are planning scenarios, not guaranteed outcomes.
+Live inference falls back where product behavior permits. Production persistence fails closed when `MONGODB_URI` is configured, preventing silent divergence into local data. Generated performance figures are planning scenarios, not guaranteed outcomes.

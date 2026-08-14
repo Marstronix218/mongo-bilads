@@ -6,8 +6,9 @@ import { getCampaign } from "@/lib/campaigns";
 import { runCreativeDirector, fallbackConcepts, safeImagePrompt, type ConceptDraft } from "@/lib/creative";
 import { generateCacheKey, readGenerateCache, writeGenerateCache } from "@/lib/cache";
 import { generateAdImage, placeholderUrl, type GeneratedImageResult } from "@/lib/images";
-import { finishAgentRun, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/localdb";
-import { CHAT_MODEL, IMAGE_MODEL } from "@/lib/openai";
+import { finishAgentRun, saveCreativeGeneration, startAgentRun, type AgentExecutionMode } from "@/lib/persistence";
+import { CHAT_MODEL, IMAGE_MODEL } from "@/lib/inference";
+import { SAMPLES } from "@/lib/samples";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -61,6 +62,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   try {
     const live = req.nextUrl.searchParams.get("live") === "1";
+    const demo = req.nextUrl.searchParams.get("demo") === "1"
+      && SAMPLES.some((sample) => sample.brief.productName === body.brief.productName.trim());
     const cacheKey = generateCacheKey({
       billboardId: body.billboardId,
       productName: body.brief.productName,
@@ -73,7 +76,31 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     let path: AgentExecutionMode = "live";
     let copyPath: "live" | "canned" = "live";
 
-    if (!live && cached) {
+    if (demo && cached) {
+      response = cached;
+      path = "cache";
+    } else if (demo) {
+      // Demo requests never wait on an external model. Reuse the committed
+      // base artwork when an alternate cache entry is absent and refresh copy
+      // from the deterministic creative fallback.
+      const baseCacheKey = generateCacheKey({
+        billboardId: body.billboardId,
+        productName: body.brief.productName,
+        variant: 0,
+        consistentBrand: false,
+      });
+      const base = readGenerateCache(baseCacheKey);
+      const drafts = fallbackConcepts({ productName: body.brief.productName, board });
+      response = {
+        concepts: drafts.map((draft, index) =>
+          toConcept(draft, {
+            imageUrl: base?.concepts[index]?.imageUrl ?? placeholderUrl(body.brief.productName),
+          })
+        ),
+      };
+      path = base ? "cache" : "fallback";
+      copyPath = "canned";
+    } else if (!live && cached) {
       response = cached;
       path = "cache";
     } else {

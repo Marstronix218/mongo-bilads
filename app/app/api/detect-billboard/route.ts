@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
-import { chat, OpenAIUnavailableError, VISION_MODEL } from "@/lib/openai";
+import { chat, InferenceUnavailableError, VISION_MODEL } from "@/lib/inference";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -10,7 +10,7 @@ type Detection = {
   quad: [Point, Point, Point, Point] | null;
   confidence?: number;
   reason?: string;
-  source: "openai" | "none" | "error";
+  source: "fireworks" | "none" | "error";
 };
 
 const CACHE_TTL_MS = 60 * 60 * 1000;
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
       quad,
       confidence: Number(parsed.confidence ?? (quad ? 0.5 : 0)),
       reason: typeof parsed.reason === "string" ? parsed.reason : undefined,
-      source: quad ? "openai" : "none",
+      source: quad ? "fireworks" : "none",
     };
     cache.set(key, { value, expiresAt: Date.now() + CACHE_TTL_MS });
     return NextResponse.json(value);
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<Detection>> {
     const reason = isRateLimit(err)
       ? "Detector rate-limited; keeping Street View scene unmodified."
       : "Detector unavailable";
-    if (!(err instanceof OpenAIUnavailableError) && !isRateLimit(err)) {
+    if (!(err instanceof InferenceUnavailableError) && !isRateLimit(err)) {
       console.error("detect-billboard failed:", err);
     }
     const value: Detection = { quad: null, source: "error", reason };

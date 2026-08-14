@@ -1,8 +1,8 @@
 /**
  * Phase-1 mock for /api/research (?mock=1) — contract-exact ResearchResponse.
- * Built from the deterministic pipeline with the Volt sample pinned, so board
- * ids, scores, and shapes always agree with data/billboards.json and types.ts
- * while staying 100% LLM-free and stable across calls.
+ * Built from the deterministic pipeline, so board ids, scores, and shapes
+ * always agree with data/billboards.json and types.ts while staying 100%
+ * LLM-free and stable across calls.
  */
 import type { CampaignParams, ProductBrief, ResearchResponse } from "@/lib/types";
 import { loadBoards } from "./boards";
@@ -23,16 +23,20 @@ const MOCK_CAMPAIGN: CampaignParams = {
   awarenessWeight: 0.7,
 };
 
-export function buildMockResearchResponse(): ResearchResponse {
+export function buildMockResearchResponse(
+  brief: ProductBrief = MOCK_BRIEF,
+  campaign: CampaignParams = MOCK_CAMPAIGN
+): ResearchResponse {
   const boards = loadBoards();
-  const researcher = fallbackResearcher(MOCK_BRIEF);
+  const researcher = fallbackResearcher(brief);
   const { rankings, top3 } = scoreBoards(
     boards,
     researcher.audienceProfile.interests,
-    MOCK_CAMPAIGN
+    campaign
   );
   const byId = new Map(boards.map((b) => [b.id, b]));
   for (const r of rankings) r.reason = cannedReason(byId.get(r.id)!, researcher.audienceProfile.interests);
+  const topBoard = top3[0] ? byId.get(top3[0]) : undefined;
 
   return {
     researcher,
@@ -41,9 +45,13 @@ export function buildMockResearchResponse(): ResearchResponse {
       top3,
       findings: [
         `Scored all ${rankings.length} boards on audience match and impressions per dollar.`,
-        "US-101 @ Vermont leads on commuter impressions per dollar.",
-        `${rankings.filter((r) => r.inBudget).length} of ${rankings.length} boards fit the $${MOCK_CAMPAIGN.weeklyBudgetUsd} weekly budget.`,
-        "Awareness-weighted plan favors raw impressions per dollar.",
+        topBoard
+          ? `${topBoard.name} leads on audience fit and impressions per dollar.`
+          : `No boards fit the $${campaign.weeklyBudgetUsd} weekly budget.`,
+        `${rankings.filter((r) => r.inBudget).length} of ${rankings.length} boards fit the $${campaign.weeklyBudgetUsd} weekly budget.`,
+        campaign.awarenessWeight >= 0.5
+          ? "Awareness-weighted plan favors raw impressions per dollar."
+          : "Targeted plan favors boards where the audience concentrates.",
       ],
     },
   };

@@ -6,7 +6,7 @@
  */
 import type { ProductBrief, ResearchResponse } from "@/lib/types";
 import { chatJson } from "./parse";
-import type { ChatMessage } from "./openai";
+import type { ChatMessage } from "./inference";
 import { signalsPromptBlock, signalsFallbackFinding } from "./signals";
 
 export type ResearcherBlock = ResearchResponse["researcher"];
@@ -144,4 +144,3 @@ export function fallbackResearcher(brief: ProductBrief): ResearcherBlock {
     findings,
   };
 }
-

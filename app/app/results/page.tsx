@@ -291,6 +291,7 @@ function CreativePanel({
   board,
   brief,
   audienceProfile,
+  demoMode,
   onBack,
   onSimulate,
 }: {
@@ -298,6 +299,7 @@ function CreativePanel({
   board: Billboard;
   brief: ProductBrief;
   audienceProfile: AudienceProfile;
+  demoMode: boolean;
   onBack: () => void;
   onSimulate: (board: Billboard, demoMatch: number, concept: AdConcept) => void;
 }) {
@@ -344,7 +346,11 @@ function CreativePanel({
       setLoading(true);
       setCreativeError(null);
       try {
-        const endpoint = forceLive ? "/api/generate?live=1" : "/api/generate";
+        const endpoint = demoMode
+          ? "/api/generate?demo=1"
+          : forceLive
+            ? "/api/generate?live=1"
+            : "/api/generate";
         const generationKey = `${board.id}:${variant}:${consistentBrand}`;
         let requestId = generationRequests.current.get(generationKey);
         if (!requestId) {
@@ -373,7 +379,7 @@ function CreativePanel({
         setLoading(false);
       }
     },
-    [campaignId, board.id, brief, audienceProfile, consistentBrand]
+    [campaignId, board.id, brief, audienceProfile, consistentBrand, demoMode]
   );
 
   useEffect(() => {
@@ -384,7 +390,7 @@ function CreativePanel({
     const newVariants = [...variants];
     newVariants[index]++;
     setVariants(newVariants);
-    fetchConcepts(newVariants[index], true);
+    fetchConcepts(newVariants[index], !demoMode);
   };
 
   return (
@@ -405,6 +411,11 @@ function CreativePanel({
                 {board.neighborhood}
               </span>
             </h2>
+            {demoMode && (
+              <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.16em] text-bilads-accent">
+                Demo cache · stage-safe
+              </p>
+            )}
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -453,7 +464,7 @@ function CreativePanel({
                         onClick={() => regenerate(i)}
                         className="text-sm text-bilads-accent hover:text-bilads-accent/80 font-mono"
                       >
-                        Regenerate
+                        {demoMode ? "Try alternate" : "Regenerate"}
                       </button>
                       <button
                         onClick={() => testAttention(concept)}
@@ -503,7 +514,7 @@ function CreativePanel({
                           </p>
                           <p className="text-[9px] font-mono text-bilads-fg/25">
                             {report.source === "vlm"
-                              ? "Vision model · OpenAI"
+                              ? "Vision model · Fireworks"
                               : "Heuristic fallback (no vision)"}
                           </p>
                         </div>
@@ -524,7 +535,7 @@ function CreativePanel({
 
             {/* Sponsor badges */}
             <div className="flex items-center justify-center gap-6 text-[10px] font-mono text-bilads-fg/30">
-              <span>Creatives by OpenAI</span>
+              <span>Creatives by Fireworks</span>
             </div>
           </>
         )}
@@ -813,6 +824,7 @@ export default function ResultsPage() {
   const [simulation, setSimulation] = useState<SimulationWithCreative | null>(null);
   const [showRoom, setShowRoom] = useState(false);
   const [blobsData, setBlobsData] = useState<BlobsResult | null>(null);
+  const [demoMode, setDemoMode] = useState(false);
 
   // Create the durable campaign first, then run and persist research against it.
   useEffect(() => {
@@ -824,6 +836,7 @@ export default function ResultsPage() {
     const launch = JSON.parse(stored) as {
       brief: ProductBrief;
       campaign: CampaignParams;
+      sampleId?: string;
       clientRequestId?: string;
       researchRequestId?: string;
       campaignId?: string;
@@ -831,13 +844,16 @@ export default function ResultsPage() {
     };
     const b = launch.brief;
     const c = launch.campaign;
+    const isDemo = Boolean(launch.sampleId);
     launch.clientRequestId ??= crypto.randomUUID();
     launch.researchRequestId ??= crypto.randomUUID();
     let cancelled = false;
+    const phaseTimers: ReturnType<typeof setTimeout>[] = [];
     queueMicrotask(() => {
       if (!cancelled) {
         setBrief(b);
         setCampaign(c);
+        setDemoMode(isDemo);
       }
     });
 
@@ -850,6 +866,7 @@ export default function ResultsPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               clientRequestId: launch.clientRequestId,
+              sampleId: launch.sampleId,
               brief: b,
               campaign: c,
             }),
@@ -866,6 +883,7 @@ export default function ResultsPage() {
         if (launch.research) {
           setResearch(launch.research);
           setAgentPhase(2);
+          if (isDemo) setSelectedBoard(launch.research.mediaBuyer.top3[0] ?? null);
           fetch("/api/blobs", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -877,7 +895,7 @@ export default function ResultsPage() {
           return;
         }
 
-        const researchResponse = await fetch("/api/research", {
+        const researchResponse = await fetch(isDemo ? "/api/research?demo=1" : "/api/research", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -891,10 +909,17 @@ export default function ResultsPage() {
         if (!researchResponse.ok) throw new Error(data.error ?? "Research failed");
         if (cancelled) return;
         setResearch(data);
+        launch.research = data;
+        sessionStorage.setItem("bilads-brief", JSON.stringify(launch));
         setAgentPhase(0);
-        // Animate: researcher active for 4s, then media buyer for 4s
-        setTimeout(() => setAgentPhase(1), 4000);
-        setTimeout(() => setAgentPhase(2), 8000);
+        // Sample demos retain a visible handoff without imposing an eight-second stage delay.
+        const researcherDelay = isDemo ? 600 : 4000;
+        const mediaBuyerDelay = isDemo ? 1400 : 8000;
+        phaseTimers.push(setTimeout(() => setAgentPhase(1), researcherDelay));
+        phaseTimers.push(setTimeout(() => {
+          setAgentPhase(2);
+          if (isDemo) setSelectedBoard(data.mediaBuyer.top3[0] ?? null);
+        }, mediaBuyerDelay));
         // Opportunity blobs: ICP-matched account clusters for the map.
         fetch("/api/blobs", {
           method: "POST",
@@ -912,6 +937,7 @@ export default function ResultsPage() {
     void load();
     return () => {
       cancelled = true;
+      phaseTimers.forEach(clearTimeout);
     };
   }, [router]);
 
@@ -1012,6 +1038,11 @@ export default function ResultsPage() {
             className="w-24 bg-bilads-bg border border-bilads-fg/10 rounded px-2 py-1 text-bilads-fg"
           />
         </div>
+        {demoMode && (
+          <span className="rounded-full border border-bilads-accent/30 bg-bilads-accent/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-bilads-accent">
+            Fast demo
+          </span>
+        )}
         <div className="flex items-center gap-2 text-sm font-mono flex-1">
           <span className="text-bilads-fg/40">Targeted</span>
           <input
@@ -1166,6 +1197,7 @@ export default function ResultsPage() {
           board={creativeBoard}
           brief={brief}
           audienceProfile={research.researcher.audienceProfile}
+          demoMode={demoMode}
           onBack={() => setCreativeBoard(null)}
           onSimulate={(board, demoMatch, concept) => {
             const ranking = research.mediaBuyer.rankings.find(

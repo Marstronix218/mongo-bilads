@@ -1,15 +1,21 @@
-// Pre-warm data/cache/ before the demo (Phase 5): hits /api/generate?live=1
-// for every sample × its likely top boards × variants 0-1 so the on-stage
-// cached path always has real creatives to fall back to. Run with the dev
-// server up and a valid GMI_API_KEY in .env.local, then COMMIT data/cache/
-// and public/generated/ so the demo works with wifi off.
+// Pre-warm data/cache/ before the demo (Phase 5): creates a durable campaign,
+// gets deterministic sample rankings, then hits /api/generate?live=1 for every
+// sample × top board × variants 0-1. Run with the dev server up and valid model
+// credentials, then commit data/cache/ and public/generated/ for offline use.
 //
 //   node scripts/warm-cache.mjs [baseUrl]   (default http://localhost:3000)
 
 const BASE = process.argv[2] ?? "http://localhost:3000";
+const ORIGIN = new URL(BASE).origin;
+const JSON_HEADERS = {
+  "Content-Type": "application/json",
+  Origin: ORIGIN,
+  "Sec-Fetch-Site": "same-origin",
+};
 
 const SAMPLES = [
   {
+    id: "volt",
     brief: {
       productName: "Volt",
       description:
@@ -20,6 +26,7 @@ const SAMPLES = [
     campaign: { weeklyBudgetUsd: 3000, campaignWeeks: 4, awarenessWeight: 0.7 },
   },
   {
+    id: "fog-city",
     brief: {
       productName: "Fog City Coffee",
       description:
@@ -30,6 +37,7 @@ const SAMPLES = [
     campaign: { weeklyBudgetUsd: 2200, campaignWeeks: 4, awarenessWeight: 0.35 },
   },
   {
+    id: "ledgerly",
     brief: {
       productName: "Ledgerly",
       description:
@@ -43,19 +51,45 @@ const SAMPLES = [
 
 async function main() {
   for (const sample of SAMPLES) {
-    // Ask the research endpoint which boards this sample actually lands on.
-    const res = await fetch(`${BASE}/api/research`, {
+    const campaignResponse = await fetch(`${BASE}/api/campaigns`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(sample),
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        clientRequestId: crypto.randomUUID(),
+        sampleId: sample.id,
+        brief: sample.brief,
+        campaign: sample.campaign,
+      }),
     });
-    const research = await res.json();
+    const created = await campaignResponse.json();
+    if (!campaignResponse.ok) {
+      throw new Error(`${sample.brief.productName}: campaign creation failed (${campaignResponse.status}): ${JSON.stringify(created)}`);
+    }
+    const campaignId = created.campaign.id;
+
+    // Deterministic research keeps the warmed board set aligned with stage mode.
+    const researchResponse = await fetch(`${BASE}/api/research?demo=1`, {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        campaignId,
+        requestId: crypto.randomUUID(),
+        brief: sample.brief,
+        campaign: sample.campaign,
+      }),
+    });
+    const research = await researchResponse.json();
+    if (!researchResponse.ok) {
+      throw new Error(`${sample.brief.productName}: research failed (${researchResponse.status}): ${JSON.stringify(research)}`);
+    }
     const boards = research.mediaBuyer.top3;
     console.log(`\n${sample.brief.productName}: warming ${boards.join(", ")}`);
 
     for (const billboardId of boards) {
       for (const variant of [0, 1]) {
         const body = {
+          campaignId,
+          requestId: crypto.randomUUID(),
           billboardId,
           brief: sample.brief,
           audienceProfile: research.researcher.audienceProfile,
@@ -65,7 +99,7 @@ async function main() {
         const t0 = Date.now();
         const gen = await fetch(`${BASE}/api/generate?live=1`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: JSON_HEADERS,
           body: JSON.stringify(body),
         });
         const out = await gen.json();

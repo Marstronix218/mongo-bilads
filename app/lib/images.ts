@@ -6,8 +6,8 @@
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { image } from "./openai";
-import { uploadFile } from "./localdb";
+import { image } from "./inference";
+import { uploadFile } from "./persistence";
 
 const GENERATED_BUCKET = "generated-creatives";
 

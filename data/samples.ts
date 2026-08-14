@@ -1,8 +1,7 @@
 import type { SampleProduct } from "../types";
 
 // Three prewritten sample briefs. Clicking a sample card on the landing page
-// sets form state to { ...sample.brief, ...sample.campaign } and previews
-// productImagePath in the image drop zone. (§7.5)
+// launches its deterministic, cache-first demo campaign. (§7.5)
 //
 // Product images are pre-generated and committed to /public/samples/.
 // Campaign defaults are tuned so each sample lands 3 in-budget boards AND

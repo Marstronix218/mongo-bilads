@@ -3,7 +3,7 @@
  * try/catch, one silent retry with "return only valid JSON", then throw —
  * the caller handles the deterministic fallback.
  */
-import { chat, type ChatMessage } from "./openai";
+import { chat, type ChatMessage } from "./inference";
 
 export function parseJsonStrict<T = unknown>(text: string): T {
   let cleaned = text.trim();
