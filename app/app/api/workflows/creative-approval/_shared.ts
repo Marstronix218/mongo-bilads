@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeApiRequest, type ApiPrincipal } from "@/lib/apiAuth";
 import {
-  creativeApprovalWorkflow,
+  creativeApprovalWorkflow as createWorkflow,
+  type CreativeApprovalState,
   WorkflowConflictError,
   WorkflowNotFoundError,
 } from "@/lib/platform/workflows/creativeApproval";
+import { mongodbConfigured } from "@/lib/mongodb";
+import { createFireworksRetrievalService } from "@/lib/platform/retrieval";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
@@ -37,5 +40,25 @@ export async function workflowResponse(run: () => Promise<unknown>): Promise<Nex
   }
 }
 
-export { creativeApprovalWorkflow };
+async function rememberApprovedCreative(state: CreativeApprovalState): Promise<void> {
+  if (!mongodbConfigured()) return;
+  try {
+    await createFireworksRetrievalService().upsert({
+      id: `approved-creative-${state.threadId}`,
+      campaignId: state.campaignId,
+      kind: "approved_creative",
+      text: JSON.stringify(state.creative),
+      metadata: {
+        threadId: state.threadId,
+        decisionRequestId: state.decision?.requestId,
+        approvedAt: state.decision?.decidedAt,
+      },
+    });
+  } catch (error) {
+    console.error("approved creative memory ingestion failed", error);
+  }
+}
 
+export async function creativeApprovalWorkflow() {
+  return createWorkflow({ onApproved: rememberApprovedCreative });
+}

@@ -56,10 +56,16 @@ export function createRetrievalService(
 ): RetrievalService {
   async function chunks(): Promise<Collection<KnowledgeChunk>> {
     const result = (await mongoDatabase()).collection<KnowledgeChunk>("knowledge_chunks");
-    indexPromise ??= result.createIndex(
-      { workspace_id: 1, campaign_id: 1, kind: 1, updated_at: -1 },
-      { name: "knowledge_campaign_kind" }
-    ).catch((error) => {
+    indexPromise ??= Promise.all([
+      result.createIndex(
+        { workspace_id: 1, id: 1 },
+        { name: "knowledge_id_unique", unique: true }
+      ),
+      result.createIndex(
+        { workspace_id: 1, campaign_id: 1, kind: 1, updated_at: -1 },
+        { name: "knowledge_campaign_kind" }
+      ),
+    ]).then(() => "ready").catch((error) => {
       indexPromise = undefined;
       throw error;
     });
@@ -150,7 +156,10 @@ export function createRetrievalService(
 
 /** Fireworks is only called when SEMANTIC_RETRIEVAL_ENABLED=true; otherwise this stays deterministic. */
 export function createFireworksRetrievalService(workspaceId = DEFAULT_WORKSPACE_ID): RetrievalService {
-  const dimensions = Number.parseInt(process.env.FIREWORKS_EMBEDDING_DIMENSIONS || "1024", 10);
+  const configuredDimensions = Number.parseInt(process.env.FIREWORKS_EMBEDDING_DIMENSIONS || "1024", 10);
+  const dimensions = Number.isInteger(configuredDimensions) && configuredDimensions > 0
+    ? configuredDimensions
+    : 1024;
   const retrievalInstruction =
     "Retrieve approved billboard creative and campaign evidence relevant to this planning query";
   return createRetrievalService(

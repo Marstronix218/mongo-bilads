@@ -183,7 +183,7 @@ export async function fireworksImage(request: ImageRequest): Promise<ImageResult
     signal: request.signal,
     init: {
       method: "POST",
-      headers: headers(cfg.apiKey),
+      headers: { ...headers(cfg.apiKey), accept: "image/png, application/json" },
       body: JSON.stringify({
         prompt: request.prompt,
         width: request.width ?? 1536,
@@ -197,6 +197,18 @@ export async function fireworksImage(request: ImageRequest): Promise<ImageResult
       }),
     },
   });
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.toLowerCase().startsWith("image/")) {
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (!bytes.length) {
+      throw new InferenceError({
+        provider: PROVIDER,
+        code: "invalid_response",
+        message: "Fireworks returned an empty image",
+      });
+    }
+    return { bytes, contentType, model };
+  }
   const data = await jsonBody<FireworksImageResponse>(PROVIDER, response);
   const result = await imageBytes(data, request.signal);
   return { ...result, model };
